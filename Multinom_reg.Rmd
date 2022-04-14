@@ -41,3 +41,17 @@ music = music[!(is.na(music$tempo)),]
 ```
 
 
+```{r}
+# prepare training and test data
+set.seed(100)
+trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
+training <- music[trainingRows, ]
+test <- music[-trainingRows, ]
+```
+
+```{r}
+# build model
+multinomModel <- multinom(music_genre ~ popularity + acousticness + danceability + duration_ms + energy + instrumentalness + key + liveness + loudness + mode + speechiness + tempo + valence, data=training) # multinom Model
+
+summary(multinomModel) 
+```
