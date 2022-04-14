@@ -115,6 +115,9 @@ table[6,6]/sum(table[6,])
 # Hip-Hop: .46
 table[7,7]/sum(table[7,])
 
+# Hip Hop or rap? .79
+(table[7,7] + table[7,9])/sum(table[7,])
+
 # Jazz: .52
 table[8,8]/sum(table[8,])
 
