@@ -17,4 +17,27 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 library(ezids)
+install.packages("nnet")
+library(nnet)
 ```
+
+```{r}
+#setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
+music = data.frame(read.csv("music_genre.csv"))
+
+# drop those blank genre values 
+music = music[!(music$music_genre == ""),]
+
+# key, mode, genre as factor
+music$key <- factor(music$key)
+music$mode <- factor(music$mode)
+music$music_genre <- factor(music$music_genre)
+
+# tempo as numeric
+music$tempo <- as.numeric(music$tempo)
+
+# drop na values
+music = music[!(is.na(music$tempo)),]
+```
+
+
