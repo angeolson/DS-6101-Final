@@ -40,6 +40,12 @@ music$tempo <- as.numeric(music$tempo)
 music = music[!(is.na(music$tempo)),]
 ```
 
+```{r}
+loadPkg("corrplot")
+music_cor <- music[, c(4:9, 11:12, 14:15, 17)]
+corrplot(cor(music_cor, method = "spearman"), method = "circle", type = "upper")
+```
+
 
 ```{r}
 # prepare training and test data
@@ -51,7 +57,79 @@ test <- music[-trainingRows, ]
 
 ```{r}
 # build model
-multinomModel <- multinom(music_genre ~ popularity + acousticness + danceability + duration_ms + energy + instrumentalness + key + liveness + loudness + mode + speechiness + tempo + valence, data=training) # multinom Model
+multinomModel <- multinom(music_genre ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data=training) # multinom Model
 
-summary(multinomModel) 
+model1 <- summary(multinomModel) 
+model1
+```
+
+```{r}
+# see how model does
+
+predicted_class <- predict (multinomModel, test)
+table(predicted_class, test$music_genre)
+mean(as.character(predicted_class) != as.character(test$music_genre))
+```
+
+```{r}
+# build model2
+multinomModel2 <- multinom(music_genre ~ popularity + danceability + duration_ms + energy + instrumentalness + liveness + mode + speechiness + tempo + valence, data=training) # multinom Model
+
+model2 <- summary(multinomModel2) 
+model2
+```
+
+```{r}
+# see how model2 does
+
+predicted_class2 <- predict (multinomModel2, test)
+
+# All
+table = table(predicted_class2, test$music_genre)
+mean(as.character(predicted_class2) != as.character(test$music_genre))
+
+# Alt: .37
+table[1,1]/sum(table[1,])
+
+# Alt or Rock? .52
+(table[1,1] + table[1,10])/sum(table[1,])
+
+# Anime: .61
+table[2,2]/sum(table[2,])
+
+# Blues: .49
+table[3,3]/sum(table[3,])
+
+# Blues or Jazz? .62
+(table[3,3] + table[3,8])/sum(table[3,])
+
+# Class: .71
+table[4,4]/sum(table[4,])
+
+# Country: .43
+table[5,5]/sum(table[5,])
+
+# Elec: .56
+table[6,6]/sum(table[6,])
+
+# Hip-Hop: .46
+table[7,7]/sum(table[7,])
+
+# Jazz: .52
+table[8,8]/sum(table[8,])
+
+# Jazz or Blues? .63
+(table[8,8] + table[8,3])/sum(table[8,])
+
+# Rap: .42
+table[9,9] /sum(table[9,])
+
+# Rap or Hip Hop? .87
+(table[9,9] + table[9,7])/sum(table[9,])
+
+# Rock: .53
+table[10,10] /sum(table[10,])
+
+# Rock or Alt? .66
+(table[10,10] + table[10,1])/sum(table[10,])
 ```
