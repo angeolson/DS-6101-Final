@@ -204,6 +204,12 @@ df
 # Logit models by genre
 gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
 
+for (genre in gens) {
+
+  
+}
+
+music$selgen <- ifelse(music$music_genre == gens[1], 1, 0)
 
 
 # prepare training and test data
