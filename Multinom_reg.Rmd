@@ -40,7 +40,7 @@ music$tempo <- as.numeric(music$tempo)
 music = music[!(is.na(music$tempo)),]
 ```
 
-```{r}
+```{r, results='markup'}
 loadPkg("corrplot")
 music_cor <- music[, c(4:9, 11:12, 14:15, 17)]
 corrplot(cor(music_cor, method = "spearman"), method = "circle", type = "upper")
@@ -55,7 +55,7 @@ training <- music[trainingRows, ]
 test <- music[-trainingRows, ]
 ```
 
-```{r}
+```{r, results = 'markup'}
 # build model
 multinomModel <- multinom(music_genre ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data=training) # multinom Model
 
@@ -64,11 +64,65 @@ model1
 ```
 
 ```{r}
-# see how model does
+data1 <- list()
+data2 <-list()
+cols <- c("Alt", "Alt-Rock", "Anime", "Blues", "Blues-Jazz", "Class", "Country", "Elec", "Hip-Hop", "HH-Rap", "Jazz", "Jazz-Blues", "Rap", "Rap-HH", "Rock", "Rock-Alt")
+```
+
+```{r, results = 'markup'}
+# see how model1 does
 
 predicted_class <- predict (multinomModel, test)
-table(predicted_class, test$music_genre)
+table = table(predicted_class, test$music_genre)
 mean(as.character(predicted_class) != as.character(test$music_genre))
+
+# Alt: .38
+data1 <- c(data1, table[1,1]/sum(table[1,]))
+
+# Alt or Rock? .51
+data1 <- c(data1, (table[1,1] + table[1,10])/sum(table[1,]))
+
+# Anime: .60
+data1 <- c(data1, table[2,2]/sum(table[2,]))
+
+# Blues: .49
+data1 <- c(data1, table[3,3]/sum(table[3,]))
+
+# Blues or Jazz? .61
+data1 <- c(data1, (table[3,3] + table[3,8])/sum(table[3,]))
+
+# Class: .70
+data1 <- c(data1, table[4,4]/sum(table[4,]))
+
+# Country: .44
+data1 <- c(data1, table[5,5]/sum(table[5,]))
+
+# Elec: .57
+data1 <- c(data1, table[6,6]/sum(table[6,]))
+
+# Hip-Hop: .44
+data1 <- c(data1, table[7,7]/sum(table[7,]))
+
+# Hip Hop or rap? .79
+data1 <- c(data1, (table[7,7] + table[7,9])/sum(table[7,]))
+
+# Jazz: .50
+data1 <- c(data1, table[8,8]/sum(table[8,]))
+
+# Jazz or Blues? .62
+data1 <- c(data1, (table[8,8] + table[8,3])/sum(table[8,]))
+
+# Rap: .43
+data1 <- c(data1, table[9,9] /sum(table[9,]))
+
+# Rap or Hip Hop? .88
+data1 <- c(data1, (table[9,9] + table[9,7])/sum(table[9,]))
+
+# Rock: .53
+data1 <- c(data1, table[10,10] /sum(table[10,]))
+
+# Rock or Alt? .65
+data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
 
 ```{r}
@@ -89,50 +143,74 @@ table = table(predicted_class2, test$music_genre)
 mean(as.character(predicted_class2) != as.character(test$music_genre))
 
 # Alt: .37
-table[1,1]/sum(table[1,])
+data2 <- c(data2, table[1,1]/sum(table[1,]))
 
 # Alt or Rock? .52
-(table[1,1] + table[1,10])/sum(table[1,])
+data2 <- c(data2, (table[1,1] + table[1,10])/sum(table[1,]))
 
 # Anime: .61
-table[2,2]/sum(table[2,])
+data2 <- c(data2, table[2,2]/sum(table[2,]))
 
 # Blues: .49
-table[3,3]/sum(table[3,])
+data2 <- c(data2, table[3,3]/sum(table[3,]))
 
 # Blues or Jazz? .62
-(table[3,3] + table[3,8])/sum(table[3,])
+data2 <- c(data2, (table[3,3] + table[3,8])/sum(table[3,]))
 
 # Class: .71
-table[4,4]/sum(table[4,])
+data2 <- c(data2, table[4,4]/sum(table[4,]))
 
 # Country: .43
-table[5,5]/sum(table[5,])
+data2 <- c(data2, table[5,5]/sum(table[5,]))
 
 # Elec: .56
-table[6,6]/sum(table[6,])
+data2 <- c(data2, table[6,6]/sum(table[6,]))
 
 # Hip-Hop: .46
-table[7,7]/sum(table[7,])
+data2 <- c(data2, table[7,7]/sum(table[7,]))
 
 # Hip Hop or rap? .79
-(table[7,7] + table[7,9])/sum(table[7,])
+data2 <- c(data2, (table[7,7] + table[7,9])/sum(table[7,]))
 
 # Jazz: .52
-table[8,8]/sum(table[8,])
+data2 <- c(data2, table[8,8]/sum(table[8,]))
 
 # Jazz or Blues? .63
-(table[8,8] + table[8,3])/sum(table[8,])
+data2 <- c(data2, (table[8,8] + table[8,3])/sum(table[8,]))
 
 # Rap: .42
-table[9,9] /sum(table[9,])
+data2 <- c(data2, table[9,9] /sum(table[9,]))
 
 # Rap or Hip Hop? .87
-(table[9,9] + table[9,7])/sum(table[9,])
+data2 <- c(data2, (table[9,9] + table[9,7])/sum(table[9,]))
 
 # Rock: .53
-table[10,10] /sum(table[10,])
+data2 <- c(data2, table[10,10] /sum(table[10,]))
 
 # Rock or Alt? .66
-(table[10,10] + table[10,1])/sum(table[10,])
+data2 <- c(data2, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
+
+```{r, results = 'markup'}
+# make results of two model accuracies by genre into a df
+
+df = data.frame(unlist(data1), unlist(data2), row.names = cols)
+names(df) = c("Model 1", "Model 2")
+df$diff = df$`Model 1` - df$`Model 2`
+df
+```
+
+```{r}
+# Logit models by genre
+gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
+
+
+
+# prepare training and test data
+set.seed(100)
+trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
+training <- music[trainingRows, ]
+test <- music[-trainingRows, ]
+```
+
+
