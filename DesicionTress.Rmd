@@ -43,8 +43,8 @@ Prepossessing the Genre Column with dummy variables
 ```{r, results = 'markup'}
 loadPkg("rpart")
 
-set.seed(100)
-treefit <- rpart(music_genre ~ ., data=new_music, method="class", control = list(maxdepth = 14) )
+set.seed(10)
+treefit <- rpart(music_genre ~ liveness + loudness + mode, data=new_music, method="class", control = list(maxdepth = 15) )
 summary(treefit)
 loadPkg("rattle")
 fancyRpartPlot(treefit)
