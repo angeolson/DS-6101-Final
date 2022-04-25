@@ -35,14 +35,23 @@ music = music[!(music$music_genre == ""),]
 Prepossessing the Genre Column with dummy variables
 
 ```{r, results = 'markup'}
-music$music_genre <- factor(music$music_genre)
-str(music)
+#music$music_genre <- factor(music$music_genre)
+#str(music)
 ```
 
 ```{r, results = 'markup'}
-music_tree<-subset(music, music_genre == 6 | 7)
-treefit <- tree(music_genre ~ liveness + loudness, data=music_tree)
-plot(treefit) 
+loadPkg("rpart")
+music_tree<-subset(music, music_genre == 6)
+str(music_tree)
+set.seed(1)
+treefit <- rpart(music_genre ~ liveness + loudness, data=music_tree, method="class", control = list(maxdepth = 14) )
+loadPkg("rpart.plot") 
+tree <- rpart.plot(treefit)
+summary(tree)
+loadPkg("rattle")
+fancyRpartPlot(treefit)
+
+
 ```
 
 
