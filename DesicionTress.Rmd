@@ -26,28 +26,26 @@ Reading in the dataset: All come in as expected (date is a character, but we don
 ```{r}
 setwd("/Users/pavan/Desktop/Git/6101 project/DS-6101-Final")
 music = data.frame(read.csv("music_genre.csv"))
+str(music)
 ```
 
 ```{r}
 # drop those blank genre values 
 music = music[!(music$music_genre == ""),]
+new_music<-subset(music, music_genre=='Electronic' | music_genre=='Jazz')
+new_music$music_genre = factor(new_music$music_genre)
+str(new_music)
 ```
 Prepossessing the Genre Column with dummy variables
 
-```{r, results = 'markup'}
-#music$music_genre <- factor(music$music_genre)
-#str(music)
-```
+
 
 ```{r, results = 'markup'}
 loadPkg("rpart")
-music_tree<-subset(music, music_genre == 6)
-str(music_tree)
-set.seed(1)
-treefit <- rpart(music_genre ~ liveness + loudness, data=music_tree, method="class", control = list(maxdepth = 14) )
-loadPkg("rpart.plot") 
-tree <- rpart.plot(treefit)
-summary(tree)
+
+set.seed(100)
+treefit <- rpart(music_genre ~ liveness + loudness + mode, data=new_music, method="class", control = list(maxdepth = 14) )
+summary(treefit)
 loadPkg("rattle")
 fancyRpartPlot(treefit)
 
