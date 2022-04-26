@@ -32,9 +32,7 @@ str(music)
 ```{r}
 # drop those blank genre values 
 music = music[!(music$music_genre == ""),]
-new_music<-subset(music, music_genre=='Electronic' | music_genre=='Jazz')
-new_music$music_genre = factor(new_music$music_genre)
-str(new_music)
+
 ```
 
 
@@ -51,18 +49,22 @@ for (i in music$music_genre)
   else
     new_genres<-append(new_genres,values=0)
 }
+music$new_genres<-new_genres
 
-print(new_genres)
-str(new_genres)
+music$new_genres = factor(music$new_genres)
+
+str(music)
 ```
 
 
 ```{r, results = 'markup'}
 loadPkg("rpart")
 
-set.seed(10)
-treefit <- rpart(music_genre ~ liveness + loudness + mode, data=new_music, method="class", control = list(maxdepth = 15) )
+set.seed(1)
+treefit <- rpart(new_genres ~ liveness + loudness + mode, data=music, method="class", control = list(maxdepth = 15) )
 summary(treefit)
+plot(treefit, uniform=TRUE, main="Classification Tree")
+
 loadPkg("rattle")
 fancyRpartPlot(treefit)
 
