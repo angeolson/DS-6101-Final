@@ -36,8 +36,24 @@ new_music<-subset(music, music_genre=='Electronic' | music_genre=='Jazz')
 new_music$music_genre = factor(new_music$music_genre)
 str(new_music)
 ```
-Prepossessing the Genre Column with dummy variables
 
+
+
+Prepossessing the Genre Column with dummy variables
+```{r}
+
+#genres<-c("Electronic","Anime","Jazz","Alternative","Country","Rap","Blues","Rock","Classical","Hip-Hop")
+new_genres<-c()
+for (i in music$music_genre) 
+  {
+  if (i=="Electronic")
+    new_genres<-append(new_genres,values=1)
+  else
+    new_genres<-append(new_genres,values=0)
+}
+
+print(new_genres)
+```
 
 
 ```{r, results = 'markup'}
