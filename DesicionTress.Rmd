@@ -39,8 +39,7 @@ music = music[!(music$music_genre == ""),]
 
 Prepossessing the Genre Column with dummy variables
 ```{r}
-
-#genres<-c("Electronic","Anime","Jazz","Alternative","Country","Rap","Blues","Rock","Classical","Hip-Hop")
+#genres
 new_genres<-c()
 for (i in music$music_genre) 
   {
@@ -50,10 +49,34 @@ for (i in music$music_genre)
     new_genres<-append(new_genres,values='ne')
 }
 music$new_genres<-new_genres
-
 music$new_genres = factor(music$new_genres)
 
+new_modes<-c()
+for (i in music$mode) 
+  {
+  if (i=="Minor")
+    new_modes<-append(new_modes,values='m')
+  else
+    new_modes<-append(new_modes,values='nm')
+}
+
+
+music$new_modes<-new_modes
+music$new_modes = factor(music$new_modes)
+
 str(music)
+```
+
+
+```{r}
+
+library(partykit)
+treefit1<-ctree(new_genres ~ liveness + energy, data=music)
+plot(treefit1)
+
+treefit2<-ctree(new_genres ~ new_modes + energy, data=music)
+plot(treefit2)
+
 ```
 
 
