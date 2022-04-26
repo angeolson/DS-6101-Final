@@ -53,6 +53,7 @@ for (i in music$music_genre)
 }
 
 print(new_genres)
+str(new_genres)
 ```
 
 
