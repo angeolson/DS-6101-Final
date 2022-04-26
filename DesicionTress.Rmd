@@ -45,9 +45,9 @@ new_genres<-c()
 for (i in music$music_genre) 
   {
   if (i=="Electronic")
-    new_genres<-append(new_genres,values=1)
+    new_genres<-append(new_genres,values='e')
   else
-    new_genres<-append(new_genres,values=0)
+    new_genres<-append(new_genres,values='ne')
 }
 music$new_genres<-new_genres
 
@@ -61,7 +61,7 @@ str(music)
 loadPkg("rpart")
 
 set.seed(1)
-treefit <- rpart(new_genres ~ liveness + loudness + mode, data=music, method="class", control = list(maxdepth = 15) )
+treefit <- rpart(mode ~ key + music_genre +liveness, data=music, method="class", control = list(maxdepth = 15) )
 summary(treefit)
 plot(treefit, uniform=TRUE, main="Classification Tree")
 
