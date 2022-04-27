@@ -42,12 +42,10 @@ Prepossessing the Genre Column with dummy variables
 #genres as binary categorical data
 new_genres<-c()
 for (i in music$music_genre) 
-  {
-  if (i=="Electronic")
+  {if (i=="Electronic")
     new_genres<-append(new_genres,values='e')
   else
-    new_genres<-append(new_genres,values='ne')
-}
+    new_genres<-append(new_genres,values='ne')}
 music$new_genres<-new_genres
 
 
@@ -83,12 +81,12 @@ library(caret)
 library(ISLR)
 
 #binary genres
-treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training,method="class", control = list(maxdepth = 4))
+treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training,method="class", control = list(maxdepth = 14))
 fancyRpartPlot(treefit1)
 
 printcp(treefit1)
-treefit1<-prune(treefit1, cp=.01)
-fancyRpartPlot(treefit1)
+#treefit1<-prune(treefit1, cp=.01)
+#fancyRpartPlot(treefit1)
 #cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
 
 ```
@@ -99,8 +97,8 @@ treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy 
 fancyRpartPlot(treefit2)
 
 printcp(treefit2)
-treefit2<-prune(treefit2, cp=0.01)
-fancyRpartPlot(treefit2)
+#treefit2<-prune(treefit2, cp=0.01)
+#fancyRpartPlot(treefit2)
 #cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
 
 ```
