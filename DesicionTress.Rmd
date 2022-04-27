@@ -103,7 +103,20 @@ cm = confusionMatrix( predict(treefit2, type = "class"), reference = training$mu
 
 ```
 
+```{r, results = 'markup'}
+loadPkg("class")
 
+k10_new_genres=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"new_genres"], k=10)
+cm = confusionMatrix(k10_new_genres, reference = testing[,"new_genres"] )
+table(k10_new_genres)
+
+
+
+k10_music_genre=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"music_genre"], k=10)
+cm = confusionMatrix(k10_music_genre, reference = testing[,"music_genre"] )
+table(k10_music_genre)
+
+```
 
 
 
@@ -145,15 +158,15 @@ cm = confusionMatrix(predict(treefit2_bal, type = "class"), reference = training
 ```{r, results = 'markup'}
 loadPkg("class")
 
-k10_new_genres=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"new_genres"], k=10)
-cm = confusionMatrix(k10, reference = testing[,"new_genres"] )
-table(k10_new_genres)
+k10_new_genres_bal=knn(train = training_bal[,c("liveness", "energy")], test = testing_bal[,c("liveness", "energy")], cl=training_bal[,"new_genres"], k=10)
+cm = confusionMatrix(k10_new_genres_bal, reference = testing_bal[,"new_genres"] )
+table(k10_new_genres_bal)
 
 
 
-k10_music_genre=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"music_genre"], k=10)
-cm = confusionMatrix(k10, reference = testing[,"new_genres"] )
-table(k10_music_genre)
+k10_music_genre_bal=knn(train = training_bal[,c("liveness", "energy")], test = testing_bal[,c("liveness", "energy")], cl=training_bal[,"music_genre"], k=10)
+cm = confusionMatrix(k10_music_genre_bal, reference = testing_bal[,"music_genre"] )
+table(k10_music_genre_bal)
 
 ```
 
