@@ -61,6 +61,11 @@ multinomModel <- multinom(music_genre ~ popularity + danceability + duration_ms 
 
 model1 <- summary(multinomModel) 
 model1
+
+z <- model1$coefficients/model1$standard.errors
+# 2-tailed Wald z tests to test significance of coefficients
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+p
 ```
 
 ```{r}
@@ -131,6 +136,11 @@ multinomModel2 <- multinom(music_genre ~ popularity + danceability + duration_ms
 
 model2 <- summary(multinomModel2) 
 model2
+
+z <- model2$coefficients/model2$standard.errors
+# 2-tailed Wald z tests to test significance of coefficients
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+p
 ```
 
 ```{r}
@@ -193,7 +203,7 @@ data2 <- c(data2, table[10,10] /sum(table[10,]))
 
 
 
-```{r}
+```{r, results = 'markup'}
 # Logit models by genre
 
 # make list of genres 
@@ -222,12 +232,12 @@ for (genre in gens) {
 # model
   Model <- glm(selgen ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data = modelData, family = "binomial")
 
-  summary(Model)
+  print(genre)
+  print(summary(Model))
   music$predselgen <- round(predict(Model, newdata = music, type = "response"))
   table = table(music$selgen, music$predselgen)
   accuracy = (table[1,1] + table[2,2]) / nrow(music)
   data3 = c(data3, accuracy)
-  
 }
 
 ```
