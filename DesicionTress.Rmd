@@ -132,15 +132,28 @@ cm = confusionMatrix(predict(treefit1_bal, type = "class"), reference = training
 ```
 
 
+```{r}
+
+treefit2_bal<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_bal, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit2_bal)
+printcp(treefit2_bal)
+cm = confusionMatrix(predict(treefit2_bal, type = "class"), reference = training_bal$music_genre)
+
+```
 
 
 ```{r, results = 'markup'}
 loadPkg("class")
 
-k10=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"new_genres"], k=10)
-#summary(k10)
+k10_new_genres=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"new_genres"], k=10)
 cm = confusionMatrix(k10, reference = testing[,"new_genres"] )
-table(k10)
+table(k10_new_genres)
+
+
+
+k10_music_genre=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"music_genre"], k=10)
+cm = confusionMatrix(k10, reference = testing[,"new_genres"] )
+table(k10_music_genre)
 
 ```
 
