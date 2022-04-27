@@ -48,7 +48,7 @@ for (i in music$music_genre)
     new_genres<-append(new_genres,values='ne')}
 music$new_genres<-new_genres
 
-
+#
 
 ```
 
@@ -67,7 +67,7 @@ str(music)
 library(caTools)
 trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
 training <- music[trainingRows, ]
-test <- music[-trainingRows, ]
+testing <- music[-trainingRows, ]
 ```
 
 
@@ -85,10 +85,19 @@ treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy +
 fancyRpartPlot(treefit1)
 
 printcp(treefit1)
-#treefit1<-prune(treefit1, cp=.01)
-#fancyRpartPlot(treefit1)
-#cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
+cm = confusionMatrix( predict(treefit1, type = "class"), reference = training$new_genres )
 
+```
+
+```{r}
+eee<-subset(music, new_genres == 'e')
+nee<-subset(music, new_genres == "ne")
+new<-rbind(eee, nee[1:5000,])
+treefit2<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=new, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit2)
+printcp(treefit2)
+
+cm = confusionMatrix( predict(treefit2, type = "class"), reference = new$new_genres )
 ```
 
 ```{r}
@@ -105,16 +114,12 @@ printcp(treefit2)
 
 
 ```{r, results = 'markup'}
-loadPkg("rpart")
+loadPkg("class")
 
-set.seed(1)
-treefit <- rpart(mode ~ key + music_genre +liveness, data=music, method="class", control = list(maxdepth = 15) )
-summary(treefit)
-plot(treefit, uniform=TRUE, main="Classification Tree")
-
-loadPkg("rattle")
-fancyRpartPlot(treefit)
-
+k10=knn(train = training[,c("liveness", "energy")], test = testing[,c("liveness", "energy")], cl=training[,"new_genres"], k=10)
+#summary(k10)
+cm = confusionMatrix(k10, reference = testing[,"new_genres"] )
+table(k10)
 
 ```
 
