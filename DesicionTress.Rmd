@@ -79,32 +79,36 @@ library(partykit)
 library(rpart)
 loadPkg("rpart.plot")
 loadPkg("rattle")
+library(caret)
+library(ISLR)
 
+
+
+#binary genres
 treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training)
 fancyRpartPlot(treefit1)
 
-Predicted <- ordered(pre_predict_model1[,2], levels = c("Electronic", "Not Electronic"))
-Actual <- ordered(training$new_genres,levels = c("Electronic", "Not Electronic"))
-cm <-table(Predicted,Actual)
-
-
-cp1<-treefit1$cptable
-xkabledply(cp1)
-tree_prune1 <- prune(treefit1, cp = treefit1$cptable[0.01,"CP"])
+xkabledply(treefit1$cptable)
+tree_prune1 <- prune(treefit1, cp = 0.01)
 fancyRpartPlot(tree_prune1)
-predict_model1<-predict(tree_prune1, test_data)
+
+predict_model1<-predict(tree_prune1,test)
+#confusionMatrix(test$new_genres, predict_model1)
 
 
+```
 
-treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=train_data)
+```{r}
+#non-binary genres
 
+treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training)
 fancyRpartPlot(treefit2)
-cp2<-treefit2$cptable
-xkabledply(cp2)
-tree_prune2 <- prune(treefit2, cp = treefit2$cptable[0.01,"CP"])
+
+xkabledply(treefit2$cptable)
+tree_prune2 <- prune(treefit2, cp = 0.01)
 fancyRpartPlot(tree_prune2)
 
-predict_model2<-predict(treefit2, test_data)
+predict_model2<-predict(tree_prune2, test)
 ```
 
 
