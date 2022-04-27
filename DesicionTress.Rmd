@@ -39,7 +39,7 @@ music = music[!(music$music_genre == ""),]
 
 Prepossessing the Genre Column with dummy variables
 ```{r}
-#genres
+#genres as binary categorical data
 new_genres<-c()
 for (i in music$music_genre) 
   {
@@ -49,32 +49,43 @@ for (i in music$music_genre)
     new_genres<-append(new_genres,values='ne')
 }
 music$new_genres<-new_genres
+
+
+
+```
+
+```{r}
 music$new_genres = factor(music$new_genres)
+music$music_genre = factor(music$music_genre)
+music$mode = factor(music$mode)
+music$key = factor(music$key)
 
-new_modes<-c()
-for (i in music$mode) 
-  {
-  if (i=="Minor")
-    new_modes<-append(new_modes,values='m')
-  else
-    new_modes<-append(new_modes,values='nm')
-}
-
-
-music$new_modes<-new_modes
-music$new_modes = factor(music$new_modes)
 
 str(music)
 ```
 
 
 ```{r}
+library(caTools)
+sample_data = sample.split(music, SplitRatio = 0.8)
+train_data <- subset(music, sample_data == TRUE)
+test_data <- subset(music, sample_data == FALSE)
+```
 
+
+
+```{r}
 library(partykit)
-treefit1<-ctree(new_genres ~ liveness + energy, data=music)
-plot(treefit1)
+library(rpart)
+loadPkg("rpart.plot")
+loadPkg("rattle")
 
-treefit2<-ctree(new_genres ~ new_modes + energy, data=music)
+treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=train_data)
+predict_model<-predict(treefit1, test_data)
+plot(treefit1)
+fancyRpartPlot(treefit1)
+
+treefit2<-ctree(music_genre ~ popularity, data=music)
 plot(treefit2)
 
 ```
