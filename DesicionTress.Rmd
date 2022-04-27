@@ -69,7 +69,7 @@ str(music)
 library(caTools)
 sample_data = sample.split(music, SplitRatio = 0.8)
 train_data <- subset(music, sample_data == TRUE)
-test_data <- subset(music, sample_data == FALSE)
+test_data <- subset(music, sample_data == TRUE)
 ```
 
 
@@ -81,13 +81,29 @@ loadPkg("rpart.plot")
 loadPkg("rattle")
 
 treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=train_data)
-predict_model<-predict(treefit1, test_data)
-plot(treefit1)
+
 fancyRpartPlot(treefit1)
+cp1<-treefit1$cptable
+xkabledply(cp1)
+pre_predict_model1<-predict(treefit1, test_data)
+table(test_data$new_genres, pre_predict_model1)
 
-treefit2<-ctree(music_genre ~ popularity, data=music)
-plot(treefit2)
+tree_prune1 <- prune(treefit1, cp = treefit1$cptable[0.01,"CP"])
+fancyRpartPlot(tree_prune1)
 
+predict_model1<-predict(tree_prune1, test_data)
+
+
+
+treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=train_data)
+
+fancyRpartPlot(treefit2)
+cp2<-treefit2$cptable
+xkabledply(cp2)
+tree_prune2 <- prune(treefit2, cp = treefit2$cptable[0.01,"CP"])
+fancyRpartPlot(tree_prune2)
+
+predict_model2<-predict(treefit2, test_data)
 ```
 
 
