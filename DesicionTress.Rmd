@@ -64,6 +64,8 @@ str(music)
 
 
 ```{r}
+# unbalanced data
+
 library(caTools)
 trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
 training <- music[trainingRows, ]
@@ -89,28 +91,47 @@ cm = confusionMatrix( predict(treefit1, type = "class"), reference = training$ne
 
 ```
 
-```{r}
-eee<-subset(music, new_genres == 'e')
-nee<-subset(music, new_genres == "ne")
-new<-rbind(eee, nee[1:5000,])
-treefit2<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=new, method="class", control = list(maxdepth = 4))
-fancyRpartPlot(treefit2)
-printcp(treefit2)
 
-cm = confusionMatrix( predict(treefit2, type = "class"), reference = new$new_genres )
-```
 
 ```{r}
 #non-binary genres
-treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training, method="class", control = list(maxdepth = 4))
+treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training, method="class", control = list(maxdepth = 14))
 fancyRpartPlot(treefit2)
 
 printcp(treefit2)
-#treefit2<-prune(treefit2, cp=0.01)
-#fancyRpartPlot(treefit2)
-#cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
+cm = confusionMatrix( predict(treefit2, type = "class"), reference = training$music_genre)
 
 ```
+
+
+
+
+
+
+
+
+
+```{r}
+# balancing data
+eee<-subset(music, new_genres == 'e')
+nee<-subset(music, new_genres == "ne")
+new<-rbind(eee, nee[1:5000,])
+
+trainingRows <- sample(1:nrow(new), 0.7*nrow(new))
+training_bal <- new[trainingRows, ]
+testing_bal <- new[-trainingRows, ]
+```
+
+```{r}
+
+treefit1_bal<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_bal, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit1_bal)
+printcp(treefit1_bal)
+cm = confusionMatrix(predict(treefit1_bal, type = "class"), reference = training_bal$new_genres)
+
+```
+
+
 
 
 ```{r, results = 'markup'}
