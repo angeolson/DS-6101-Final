@@ -85,30 +85,27 @@ library(ISLR)
 
 
 #binary genres
-treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training)
+treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training,method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit1)
 
-xkabledply(treefit1$cptable)
-tree_prune1 <- prune(treefit1, cp = 0.01)
-fancyRpartPlot(tree_prune1)
-
-predict_model1<-predict(tree_prune1,test)
-#confusionMatrix(test$new_genres, predict_model1)
-
+printcp(treefit1)
+treefit1<-prune(treefit1, cp=.01)
+fancyRpartPlot(treefit1)
+#cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
 
 ```
 
 ```{r}
 #non-binary genres
 
-treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training)
+treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit2)
 
-xkabledply(treefit2$cptable)
-tree_prune2 <- prune(treefit2, cp = 0.01)
-fancyRpartPlot(tree_prune2)
+printcp(treefit2)
+treefit2<-prune(treefit2, cp=0.01)
+fancyRpartPlot(treefit2)
+#cm = confusionMatrix( predict(treefit2, type = "class"), reference = music$music_genre[,"Genre"] )
 
-predict_model2<-predict(tree_prune2, test)
 ```
 
 
