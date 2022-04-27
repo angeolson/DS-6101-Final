@@ -82,8 +82,6 @@ loadPkg("rattle")
 library(caret)
 library(ISLR)
 
-
-
 #binary genres
 treefit1<-rpart(new_genres ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training,method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit1)
@@ -97,7 +95,6 @@ fancyRpartPlot(treefit1)
 
 ```{r}
 #non-binary genres
-
 treefit2<-rpart(music_genre ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit2)
 
