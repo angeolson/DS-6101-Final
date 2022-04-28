@@ -45,8 +45,8 @@ loadPkg("class")
 ```{r}
 # drop those blank genre values 
 music = music[!(music$music_genre == ""),]
-music$music_genre = factor(music$music_genre)
 
+music$music_genre = factor(music$music_genre)
 music$mode = factor(music$mode)
 music$key = factor(music$key)
 str(music)
@@ -130,8 +130,8 @@ table(knn_alt)
 ```
 
 
-```{r balancing data}
-#train/test for rock 
+```{r balancing data for rock}
+
 rock<-subset(music, new_genres_rock == "r")
 not_rock<-subset(music, new_genres_rock == "nr")
 new_rock<-rbind(rock, not_rock[1:5000,])
@@ -159,5 +159,23 @@ knn_alt=knn(train = training_alt[,c("popularity", "danceability", "energy", "ins
 cm_knn_alt = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
 cm_knn_alt
 table(knn_alt)
+```
+
+
+```{r balancing data for blues}
+blue<-subset(music, new_genres_blue == "b")
+not_blue<-subset(music, new_genres_blue == "nb")
+new_blue<-rbind(blue, not_blue[1:5000,])
+
+set.seed(100)
+trainingRows_blue <- sample(1:nrow(new_blue), 0.7*nrow(new_blue))
+training_blue <- new_blue[trainingRows_blue, ]
+testing_blue <- new_blue[-trainingRows_blue, ]
+
+```
+
+
+```{r decision tree for blues}
+treefit_blue<-rpart(new_genres_blue ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_blue, method="class", control = list(maxdepth = 4))
 
 ```
