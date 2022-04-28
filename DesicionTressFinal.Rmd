@@ -44,11 +44,11 @@ loadPkg("class")
 
 ```{r}
 # drop those blank genre values 
-music = music[!(music$music_genre == ""),]
-
-
 music$mode = factor(music$mode)
 music$key = factor(music$key)
+music$tempo <- as.numeric(music$tempo)
+
+music<-na.omit(music)
 str(music)
 
 ```
@@ -74,7 +74,7 @@ music$new_genres_rock = factor(music$new_genres_rock)
 
 #blue
 new_genres_blue<-c()
-new_genres_blue<-ifelse (music$music_genre=="Blue", "b","nb")
+new_genres_blue<-ifelse (music$music_genre=="Blues", "b","nb")
 music$new_genres_blue<-new_genres_blue
 music$new_genres_blue = factor(music$new_genres_blue)
 
@@ -177,5 +177,16 @@ testing_blue <- new_blue[-trainingRows_blue, ]
 
 ```{r decision tree for blues}
 treefit_blue<-rpart(new_genres_blue ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_blue, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit_blue)
+printcp(treefit_blue)
+cm_blue = confusionMatrix(predict(treefit_blue, type = "class"), reference = training_blue$new_genres_blue)
+cm_blue
+```
 
+```{r, results = 'markup'}
+#knn for blue
+knn_blue=knn(train = training_blue[,c("popularity", "danceability", "energy", "instrumentalness","liveness", "speechiness","tempo", "valence")], test = testing_blue[,c("popularity", "danceability", "energy", "instrumentalness", "liveness", "speechiness", "tempo","valence")], cl=training_blue[,"new_genres_blue"], k=100)
+cm_knn_blue = confusionMatrix(knn_blue, reference = testing_blue[,"new_genres_blue"] )
+cm_knn_blue
+table(knn_blue)
 ```
