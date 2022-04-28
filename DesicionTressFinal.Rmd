@@ -211,8 +211,68 @@ cm_jazz
 
 ```{r knn for jazz}
 
-knn_jazz=knn(train = training_jazz[,c("popularity", "danceability", "energy", "instrumentalness","liveness", "speechiness","tempo", "valence")], test = testing_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "liveness", "speechiness", "tempo","valence")], cl=training_jazz[,"new_genres_jazz"], k=100)
+knn_jazz=knn(train = training_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness","tempo", "valence")], test = testing_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "tempo","valence")], cl=training_jazz[,"new_genres_jazz"], k=100)
 cm_knn_jazz = confusionMatrix(knn_jazz, reference = testing_jazz[,"new_genres_jazz"] )
 cm_knn_jazz
 table(knn_jazz)
+```
+
+
+```{r balancing data for Hip-Hop}
+hiphop<-subset(music, new_genres_hiphop == "h")
+not_hiphop<-subset(music, new_genres_hiphop == "nh")
+new_hiphop<-rbind(hiphop, not_hiphop[1:5000,])
+
+set.seed(100)
+trainingRows_hiphop <- sample(1:nrow(new_hiphop), 0.7*nrow(new_hiphop))
+training_hiphop <- new_hiphop[trainingRows_hiphop, ]
+testing_hiphop <- new_hiphop[-trainingRows_hiphop, ]
+
+```
+
+```{r decision tree for Hip-Hop}
+treefit_hiphop<-rpart(new_genres_hiphop ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_hiphop, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit_hiphop)
+printcp(treefit_hiphop)
+cm_hiphop = confusionMatrix(predict(treefit_hiphop, type = "class"), reference = training_hiphop$new_genres_hiphop)
+cm_hiphop
+```
+
+```{r knn for Hip-Hop}
+
+knn_hiphop=knn(train = training_hiphop[,c("popularity", "danceability", "energy", "instrumentalness","liveness", "speechiness", "valence")], test = testing_hiphop[,c("popularity", "danceability", "energy", "instrumentalness", "liveness", "speechiness", "valence")], cl=training_hiphop[,"new_genres_hiphop"], k=100)
+cm_knn_hiphop = confusionMatrix(knn_hiphop, reference = testing_hiphop[,"new_genres_hiphop"] )
+cm_knn_hiphop
+table(knn_hiphop)
+```
+
+
+
+
+```{r balancing data for Rap}
+rap<-subset(music, new_genres_rap == "rap")
+not_rap<-subset(music, new_genres_rap == "nrap")
+new_rap<-rbind(rap, not_rap[1:5000,])
+
+set.seed(100)
+trainingRows_rap <- sample(1:nrow(new_rap), 0.7*nrow(new_rap))
+training_rap <- new_rap[trainingRows_rap, ]
+testing_rap <- new_rap[-trainingRows_rap, ]
+
+```
+
+```{r decision tree for rap}
+treefit_rap<-rpart(new_genres_rap ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_rap, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit_rap)
+printcp(treefit_rap)
+cm_rap = confusionMatrix(predict(treefit_rap, type = "class"), reference = training_rap$new_genres_rap)
+cm_rap
+```
+
+```{r knn for rap}
+
+knn_rap=knn(train = training_rap[,c("popularity", "danceability", "instrumentalness","liveness", "speechiness", "valence")], test = testing_rap[,c("popularity", "danceability", "instrumentalness", "liveness", "speechiness", "valence")], cl=training_rap[,"new_genres_rap"], k=100)
+cm_knn_rap = confusionMatrix(knn_rap, reference = testing_rap[,"new_genres_rap"] )
+cm_knn_rap
+table(knn_rap)
 ```
