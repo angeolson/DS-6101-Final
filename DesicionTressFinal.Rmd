@@ -110,7 +110,7 @@ testing_alt <- new_alt[-trainingRows_alt, ]
 
 ```{r}
 #decision tree for alternative
-treefit_alt<-rpart(new_genres_alt ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_alt, method="class", control = list(maxdepth = 4))
+treefit_alt<-rpart(new_genres_alt ~ popularity + acousticness + danceability + energy + instrumentalness + key +liveness + loudness + mode + speechiness + valence, data=training_alt, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_alt)
 printcp(treefit_alt)
 cm_alt = confusionMatrix(predict(treefit_alt, type = "class"), reference = training_alt$new_genres_alt)
@@ -142,7 +142,7 @@ testing_rock <- new_rock[-trainingRows_rock, ]
 
 ```{r}
 #decision tree for rock
-treefit_rock<-rpart(new_genres_rock ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_rock, method="class", control = list(maxdepth = 4))
+treefit_rock<-rpart(new_genres_rock ~ popularity + acousticness + danceability + energy + instrumentalness + key +liveness + loudness + mode + speechiness + valence, data=training_rock, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_rock)
 printcp(treefit_rock)
 cm_rock = confusionMatrix(predict(treefit_rock, type = "class"), reference = training_rock$new_genres_rock)
@@ -173,7 +173,7 @@ testing_blue <- new_blue[-trainingRows_blue, ]
 
 
 ```{r decision tree for blues}
-treefit_blue<-rpart(new_genres_blue ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_blue, method="class", control = list(maxdepth = 4))
+treefit_blue<-rpart(new_genres_blue ~ popularity + acousticness + danceability + energy + instrumentalness + key +liveness + loudness + mode + speechiness + valence, data=training_blue, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_blue)
 printcp(treefit_blue)
 cm_blue = confusionMatrix(predict(treefit_blue, type = "class"), reference = training_blue$new_genres_blue)
@@ -202,7 +202,7 @@ testing_jazz <- new_jazz[-trainingRows_jazz, ]
 ```
 
 ```{r decision tree for jazz}
-treefit_jazz<-rpart(new_genres_jazz ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_jazz, method="class", control = list(maxdepth = 4))
+treefit_jazz<-rpart(new_genres_jazz ~ popularity + acousticness + danceability + energy + instrumentalness + key +liveness + loudness + mode + speechiness + valence, data=training_jazz, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_jazz)
 printcp(treefit_jazz)
 cm_jazz = confusionMatrix(predict(treefit_jazz, type = "class"), reference = training_jazz$new_genres_jazz)
@@ -231,7 +231,7 @@ testing_hiphop <- new_hiphop[-trainingRows_hiphop, ]
 ```
 
 ```{r decision tree for Hip-Hop}
-treefit_hiphop<-rpart(new_genres_hiphop ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_hiphop, method="class", control = list(maxdepth = 4))
+treefit_hiphop<-rpart(new_genres_hiphop ~ popularity + acousticness + danceability + energy + instrumentalness+ key +liveness + loudness + mode + speechiness + tempo + valence, data=training_hiphop, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_hiphop)
 printcp(treefit_hiphop)
 cm_hiphop = confusionMatrix(predict(treefit_hiphop, type = "class"), reference = training_hiphop$new_genres_hiphop)
@@ -262,7 +262,7 @@ testing_rap <- new_rap[-trainingRows_rap, ]
 ```
 
 ```{r decision tree for rap}
-treefit_rap<-rpart(new_genres_rap ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_rap, method="class", control = list(maxdepth = 4))
+treefit_rap<-rpart(new_genres_rap ~ popularity + acousticness + danceability + energy + instrumentalness + key +liveness + loudness + mode + speechiness + valence, data=training_rap, method="class", control = list(maxdepth = 4))
 fancyRpartPlot(treefit_rap)
 printcp(treefit_rap)
 cm_rap = confusionMatrix(predict(treefit_rap, type = "class"), reference = training_rap$new_genres_rap)
@@ -275,4 +275,11 @@ knn_rap=knn(train = training_rap[,c("popularity", "danceability", "instrumentaln
 cm_knn_rap = confusionMatrix(knn_rap, reference = testing_rap[,"new_genres_rap"] )
 cm_knn_rap
 table(knn_rap)
+```
+
+
+```{r}
+
+
+
 ```
