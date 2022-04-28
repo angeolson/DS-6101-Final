@@ -70,27 +70,31 @@ music$new_genres_alt = factor(music$new_genres_alt)
 new_genres_rock<-c()
 new_genres_rock<-ifelse (music$music_genre=="Rock", "r","nr")
 music$new_genres_rock<-new_genres_rock
+music$new_genres_rock = factor(music$new_genres_rock)
 
 #blue
 new_genres_blue<-c()
 new_genres_blue<-ifelse (music$music_genre=="Blue", "b","nb")
 music$new_genres_blue<-new_genres_blue
+music$new_genres_blue = factor(music$new_genres_blue)
 
 #jazz
 new_genres_jazz<-c()
 new_genres_jazz<-ifelse (music$music_genre=="Jazz", "j","nj")
 music$new_genres_jazz<-new_genres_jazz
+music$new_genres_jazz = factor(music$new_genres_jazz)
 
 #hip-hop
 new_genres_hiphop<-c()
 new_genres_hiphop<-ifelse (music$music_genre=="Hip-Hop", "h","nh")
 music$new_genres_hiphop<-new_genres_hiphop
+music$new_genres_hiphop = factor(music$new_genres_hiphop)
 
 #rap
-new_genres_rock<-c()
-new_genres_rock<-ifelse (music$music_genre=="Rock", "r","nr")
-music$new_genres_rock<-new_genres_rock
-
+new_genres_rap<-c()
+new_genres_rap<-ifelse (music$music_genre=="Rap", "rap","nrap")
+music$new_genres_rap<-new_genres_rap
+music$new_genres_rap = factor(music$new_genres_rap)
 ```
 
 
@@ -102,11 +106,10 @@ not_alt<-subset(music, new_genres_alt == "na")
 new_alt<-rbind(alt, not_alt[1:5000,])
 
 set.seed(100)
-trainingRows <- sample(1:nrow(new_alt), 0.7*nrow(new_alt))
-training_alt <- new_alt[trainingRows, ]
-testing_alt <- new_alt[-trainingRows, ]
+trainingRows_alt <- sample(1:nrow(new_alt), 0.7*nrow(new_alt))
+training_alt <- new_alt[trainingRows_alt, ]
+testing_alt <- new_alt[-trainingRows_alt, ]
 ```
-
 
 ```{r}
 #decision tree for alternative
@@ -117,11 +120,9 @@ cm_alt = confusionMatrix(predict(treefit_alt, type = "class"), reference = train
 cm_alt
 ```
 
-
-
 ```{r, results = 'markup'}
-#decision tree for alternative
-knn_alt=knn(train = training_alt[,c("liveness", "energy")], test = testing_alt[,c("liveness", "energy")], cl=training_alt[,"new_genres_alt"], k=10)
+#knn for alternative
+knn_alt=knn(train = training_alt[,c("energy", "danceability","instrumentalness", "speechiness")], test = testing_alt[,c("energy", "danceability","instrumentalness", "speechiness")], cl=training_alt[,"new_genres_alt"], k=100)
 cm_knn_alt = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
 cm_knn_alt
 table(knn_alt)
@@ -129,5 +130,34 @@ table(knn_alt)
 ```
 
 
+```{r balancing data}
+#train/test for rock 
+rock<-subset(music, new_genres_rock == "r")
+not_rock<-subset(music, new_genres_rock == "nr")
+new_rock<-rbind(rock, not_rock[1:5000,])
+
+set.seed(100)
+trainingRows_rock <- sample(1:nrow(new_rock), 0.7*nrow(new_rock))
+training_rock <- new_rock[trainingRows_rock, ]
+testing_rock <- new_rock[-trainingRows_rock, ]
+```
+
+
 ```{r}
+#decision tree for rock
+treefit_rock<-rpart(new_genres_rock ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_rock, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit_rock)
+printcp(treefit_rock)
+cm_rock = confusionMatrix(predict(treefit_rock, type = "class"), reference = training_rock$new_genres_rock)
+cm_rock
+```
+
+
+```{r, results = 'markup'}
+#knn for rock
+knn_alt=knn(train = training_alt[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], test = testing_alt[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], cl=training_alt[,"new_genres_alt"], k=100)
+cm_knn_alt = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
+cm_knn_alt
+table(knn_alt)
+
 ```
