@@ -46,7 +46,7 @@ loadPkg("class")
 # drop those blank genre values 
 music = music[!(music$music_genre == ""),]
 
-music$music_genre = factor(music$music_genre)
+
 music$mode = factor(music$mode)
 music$key = factor(music$key)
 str(music)
