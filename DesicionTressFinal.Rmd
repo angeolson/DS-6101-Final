@@ -55,9 +55,6 @@ str(music)
 
 
 
-Prepossessing the Genre Column with dummy variables
-
-
 
 ```{r genres as binary categorical data}
 #alternate
@@ -189,4 +186,33 @@ knn_blue=knn(train = training_blue[,c("popularity", "danceability", "energy", "i
 cm_knn_blue = confusionMatrix(knn_blue, reference = testing_blue[,"new_genres_blue"] )
 cm_knn_blue
 table(knn_blue)
+```
+
+
+```{r balancing data for Jazz}
+jazz<-subset(music, new_genres_jazz == "j")
+not_jazz<-subset(music, new_genres_jazz == "nj")
+new_jazz<-rbind(jazz, not_jazz[1:5000,])
+
+set.seed(100)
+trainingRows_jazz <- sample(1:nrow(new_jazz), 0.7*nrow(new_jazz))
+training_jazz <- new_jazz[trainingRows_jazz, ]
+testing_jazz <- new_jazz[-trainingRows_jazz, ]
+
+```
+
+```{r decision tree for jazz}
+treefit_jazz<-rpart(new_genres_jazz ~ popularity + acousticness + danceability + energy + key +liveness + loudness + mode + speechiness + valence, data=training_jazz, method="class", control = list(maxdepth = 4))
+fancyRpartPlot(treefit_jazz)
+printcp(treefit_jazz)
+cm_jazz = confusionMatrix(predict(treefit_jazz, type = "class"), reference = training_jazz$new_genres_jazz)
+cm_jazz
+```
+
+```{r knn for jazz}
+
+knn_jazz=knn(train = training_jazz[,c("popularity", "danceability", "energy", "instrumentalness","liveness", "speechiness","tempo", "valence")], test = testing_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "liveness", "speechiness", "tempo","valence")], cl=training_jazz[,"new_genres_jazz"], k=100)
+cm_knn_jazz = confusionMatrix(knn_jazz, reference = testing_jazz[,"new_genres_jazz"] )
+cm_knn_jazz
+table(knn_jazz)
 ```
