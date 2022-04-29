@@ -370,7 +370,7 @@ Interestingly, classical wasn't even the second closest match for "La Donna è M
 predict (multinomModel2, test[ test$instance_id == '38780', ], type = 'probs')
 ```
 
-However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classicial--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
+However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
 
 ```{r}
 # make list of genres 
