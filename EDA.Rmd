@@ -28,7 +28,37 @@ head(music)
 ```{r, results='markup'}
 colnames(music)
 ```
+
 ```{r, results='markup'}
 str(music)
 xkablesummary(music)
 ```
+
+```{r}
+# changing 
+music$key <- factor(music$key)
+music$mode <- factor(music$mode)
+music$music_genre <- factor(music$music_genre)
+music$tempo <- as.numeric(music$tempo)
+
+# checking and removing null values
+paste0("Before removing missing values:", nrow(music))
+print(colSums(is.na(music)))
+music = na.omit(music)
+paste0("After removing missing values:", nrow(music))
+```
+```{r}
+#seperating numeric values
+numcolumns <- unlist(lapply(music,is.numeric))
+music_cor <- music[,numcolumns]
+music_cor <- music_cor[,-c(1)]
+head(music_cor, 5)
+```
+```{r}
+# Correlations
+
+corrplot(cor(music_cor, method = "spearman"), method = "circle", type = 'lower', order = 'hclust', tl.col = 'black',
+         cl.ratio = 0.1, tl.srt = 45, col = COL2('PRGn', 10))
+
+```
+
