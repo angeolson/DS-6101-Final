@@ -16,6 +16,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+options(scipen = 999)
 library(ezids)
 library(ggplot2)
 ```
@@ -54,11 +55,54 @@ music_cor <- music[,numcolumns]
 music_cor <- music_cor[,-c(1)]
 head(music_cor, 5)
 ```
+
 ```{r}
 # Correlations
-
+loadPkg("corrplot")
 corrplot(cor(music_cor, method = "spearman"), method = "circle", type = 'lower', order = 'hclust', tl.col = 'black',
-         cl.ratio = 0.1, tl.srt = 45, col = COL2('PRGn', 10))
+         cl.ratio = 0.1, tl.srt = 45, col = COL2('PuOr', 20))
 
 ```
 
+```{r}
+par(mfrow = c(3, 3))
+hist(music_cor$duration_ms, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Duration", xlab = "Duration")
+hist(music_cor$acousticness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Acoustiness", xlab = "Acoustiness")
+hist(music_cor$instrumentalness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Instrumentalness", xlab = "Instrumentalness")
+hist(music_cor$danceability, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Danceability", xlab = "Danceability")
+hist(music_cor$valence, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Valence", xlab = "Valence")
+hist(music_cor$popularity, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Popularity", xlab = "Popularity")
+hist(music_cor$speechiness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Speechiness", xlab = "Speechiness")
+hist(music_cor$liveness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Liveness", xlab = "Liveness")
+hist(music_cor$tempo, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Tempo", xlab = "Tempo")
+hist(music_cor$energy, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Energy", xlab = "Energy")
+hist(music_cor$loudness, breaks = 20, col = COL2('PuOr', 24), main = "Histogram for Loudness", xlab = "Loudness")
+```
+
+```{r}
+par(mfrow=c(2,2))
+for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
+{  
+qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
+   qqline(music_cor[, i], col = "red")
+}
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+# Genre frequency
+genre_count <- table(music$music_genre)
+b <- barplot(genre_count, cex.names=0.7, col = COL2('PuOr', 10), ylim = c(0,5000), xlab = "Genre", ylab = "Count")
+text(b, genre_count/2, genre_count, font = 2, col = "dark gray") 
+```
+
+```{r}
+
+
+```
