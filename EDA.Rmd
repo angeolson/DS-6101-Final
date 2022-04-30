@@ -1,6 +1,6 @@
 ---
-title: "Music Prediction Multinomial Regression"
-author: "Ange Olson"
+title: "Exploratory Data Analysis"
+author: "Meghana, Kowshik"
 date: "`r Sys.Date()`"
 output:
   html_document:
