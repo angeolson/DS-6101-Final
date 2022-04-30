@@ -39,6 +39,7 @@ loadPkg("rattle")
 library(caret)
 library(ISLR)
 loadPkg("class")
+loadPkg("dplyr")
 ```
 
 
@@ -98,9 +99,10 @@ music$new_genres_rap = factor(music$new_genres_rap)
 
 ```{r balancing data}
 #train/test for alternate 
+
 alt<-subset(music, new_genres_alt == "a")
 not_alt<-subset(music, new_genres_alt == "na")
-new_alt<-rbind(alt, not_alt[1:5000,])
+new_alt<-rbind(alt, sample_n(not_alt,5000))
 
 set.seed(100)
 trainingRows_alt <- sample(1:nrow(new_alt), 0.7*nrow(new_alt))
@@ -131,7 +133,7 @@ table(knn_alt)
 
 rock<-subset(music, new_genres_rock == "r")
 not_rock<-subset(music, new_genres_rock == "nr")
-new_rock<-rbind(rock, not_rock[1:5000,])
+new_rock<-rbind(rock, sample_n(not_rock,5000))
 
 set.seed(100)
 trainingRows_rock <- sample(1:nrow(new_rock), 0.7*nrow(new_rock))
@@ -162,7 +164,7 @@ table(knn_alt)
 ```{r balancing data for blues}
 blue<-subset(music, new_genres_blue == "b")
 not_blue<-subset(music, new_genres_blue == "nb")
-new_blue<-rbind(blue, not_blue[1:5000,])
+new_blue<-rbind(blue, sample_n(not_blue,5000))
 
 set.seed(100)
 trainingRows_blue <- sample(1:nrow(new_blue), 0.7*nrow(new_blue))
@@ -192,7 +194,7 @@ table(knn_blue)
 ```{r balancing data for Jazz}
 jazz<-subset(music, new_genres_jazz == "j")
 not_jazz<-subset(music, new_genres_jazz == "nj")
-new_jazz<-rbind(jazz, not_jazz[1:5000,])
+new_jazz<-rbind(jazz, sample_n(not_jazz,5000))
 
 set.seed(100)
 trainingRows_jazz <- sample(1:nrow(new_jazz), 0.7*nrow(new_jazz))
@@ -221,7 +223,7 @@ table(knn_jazz)
 ```{r balancing data for Hip-Hop}
 hiphop<-subset(music, new_genres_hiphop == "h")
 not_hiphop<-subset(music, new_genres_hiphop == "nh")
-new_hiphop<-rbind(hiphop, not_hiphop[1:5000,])
+new_hiphop<-rbind(hiphop, sample_n(not_hiphop,5000))
 
 set.seed(100)
 trainingRows_hiphop <- sample(1:nrow(new_hiphop), 0.7*nrow(new_hiphop))
@@ -252,7 +254,7 @@ table(knn_hiphop)
 ```{r balancing data for Rap}
 rap<-subset(music, new_genres_rap == "rap")
 not_rap<-subset(music, new_genres_rap == "nrap")
-new_rap<-rbind(rap, not_rap[1:5000,])
+new_rap<-rbind(rap, sample_n(not_rap,5000))
 
 set.seed(100)
 trainingRows_rap <- sample(1:nrow(new_rap), 0.7*nrow(new_rap))
