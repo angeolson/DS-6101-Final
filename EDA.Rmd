@@ -56,9 +56,27 @@ head(music_cor, 5)
 ```
 ```{r}
 # Correlations
-
+loadPkg("corrplot")
 corrplot(cor(music_cor, method = "spearman"), method = "circle", type = 'lower', order = 'hclust', tl.col = 'black',
          cl.ratio = 0.1, tl.srt = 45, col = COL2('PRGn', 10))
 
 ```
+# To see categories in the music_genre
+```{r, results='markup'}
+unique(music$music_genre)
+```
+
+# Scatterplot to see energy of the song by genre wise
+```{r, results='markup'}
+library(ggplot2)
+library(ggpubr)
+ggplot(music, aes(x=c(music_genre), y=energy)) + 
+  ggtitle("Energy vs Music_Genre") + 
+   xlab("Energy") + ylab("Music_Genre") + 
+    geom_point(size = 1, shape = 18, color = "blue") + 
+     theme_bw()
+```
+
+
+
 
