@@ -23,7 +23,7 @@ library(ezids)
 Reading in the dataset: All come in as expected (date is a character, but we don't need this because it's not really realted to the song data)
 
 ```{r}
-setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
+#setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
 music = data.frame(read.csv("music_genre.csv"))
 ```
 

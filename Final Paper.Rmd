@@ -1,0 +1,421 @@
+---
+title: "DATS 6101 Music Genre Prediction"
+author: "Ange Olson, Pavani Samal, Meghana Gantla, Kowshik Bezawada"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: false
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+library(ezids)
+#install.packages("nnet")
+library(nnet)
+```
+
+# Section I: Intro 
+
+## Data Loading and Cleaning
+
+Reading in the dataset, all variables read in as expected.
+
+```{r}
+music = data.frame(read.csv("music_genre.csv"))
+```
+
+First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(genres)` genres, each with roughly 4,500 obersvations, making this a balanced dataset.  
+
+```{r, results = 'markup'}
+library(dplyr)
+genres <- music %>%
+     group_by(music_genre) %>%
+     count()
+genres
+```
+
+All keys (major and minor) are represented in the dataset, and the distribution of songs in each key across all genres does appear to be statistically significantly different at  the $\alpha$ = 0.05 level.
+
+```{r, results = 'markup'}
+Cont_Table <- table(music$music_genre, music$key)
+xkabledply(Cont_Table, title="Contingency Table for Genre and Key")
+chitest = chisq.test(Cont_Table)
+chitest
+```
+
+```{r}
+# drop those blank genre values 
+music = music[!(music$music_genre == ""),]
+
+# convert tempo to numeric
+music$tempo <- as.numeric(music$tempo)
+
+# created some na values...let's see what
+
+tempoNA <- music %>%
+     group_by(is.na(music$tempo)) %>%
+     count()
+tempoNA
+# not enough to cause concern 
+```
+
+Below, we test for statistically significant differences in our continuous variables and find that all show differences in means.
+
+```{r, results = 'markup'}
+# simplify dataset 
+musicNum <- music[, c(4:9, 11:12, 14:15, 17, 18)]
+
+# run tests
+library(tidyverse)
+anova_results <- purrr::map(musicNum[,1:11], ~summary(aov(.x ~ musicNum$music_genre)))
+anova_results
+```
+
+# Section II: EDA
+
+
+# Section III: SMART Questions and Model Selection 
+
+# Section IV: Logit Modeling
+
+```{r}
+#setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
+music = data.frame(read.csv("music_genre.csv"))
+
+# drop those blank genre values 
+music = music[!(music$music_genre == ""),]
+
+# key, mode, genre as factor
+music$key <- factor(music$key)
+music$mode <- factor(music$mode)
+music$music_genre <- factor(music$music_genre)
+
+# tempo as numeric
+music$tempo <- as.numeric(music$tempo)
+
+# drop na values
+music = music[!(is.na(music$tempo)),]
+```
+
+First, we look to see which variables are correlated with each other to ensure we are not included variables that are too correlated in our model. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
+
+```{r, results='markup'}
+loadPkg("corrplot")
+music_cor <- music[, c(4:9, 11:12, 14:15, 17)]
+corrplot(cor(music_cor, method = "spearman"), method = "circle", type = "upper")
+```
+
+```{r}
+# prepare training and test data
+set.seed(100)
+trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
+training <- music[trainingRows, ]
+test <- music[-trainingRows, ]
+```
+
+First, we build a multinomial Logit model with the following variables:
+
+* `popularity`
+* `danceability`
+* `duration_ms`
+* `energy`
+* `instrumentalness`
+* `key`
+* `liveness`
+* `mode`
+* `speechiness`
+* `tempo`
+* `valence`
+
+All variables are statistically significant according to 2-tailed Wald tests at  the $\alpha$ = 0.05 level.
+
+```{r, results = 'markup'}
+# build model
+multinomModel <- multinom(music_genre ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data=training) # multinom Model
+
+model1 <- summary(multinomModel) 
+model1
+
+z <- model1$coefficients/model1$standard.errors
+# 2-tailed Wald z tests to test significance of coefficients
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+print("Wald Test P-Values: ")
+p
+```
+
+```{r}
+data1 <- list()
+data2 <-list()
+#cols <- c("Alt", "Alt-Rock", "Anime", "Blues", "Blues-Jazz", "Class", "Country", "Elec", "Hip-Hop", "HH-Rap", "Jazz", "Jazz-Blues", "Rap", "Rap-HH", "Rock", "Rock-Alt")
+```
+
+Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alterantive `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` to and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
+
+If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement. Next, we look to see if we can simplify the model without sacrificing accuracy. 
+
+```{r, results = 'markup'}
+# see how model1 does
+
+predicted_class <- predict (multinomModel, test)
+table = table(predicted_class, test$music_genre)
+
+# Alt: .38
+data1 <- c(data1, table[1,1]/sum(table[1,]))
+
+# Alt or Rock? .51
+# data1 <- c(data1, (table[1,1] + table[1,10])/sum(table[1,]))
+
+# Anime: .60
+data1 <- c(data1, table[2,2]/sum(table[2,]))
+
+# Blues: .49
+data1 <- c(data1, table[3,3]/sum(table[3,]))
+
+# Blues or Jazz? .61
+# data1 <- c(data1, (table[3,3] + table[3,8])/sum(table[3,]))
+
+# Class: .70
+data1 <- c(data1, table[4,4]/sum(table[4,]))
+
+# Country: .44
+data1 <- c(data1, table[5,5]/sum(table[5,]))
+
+# Elec: .57
+data1 <- c(data1, table[6,6]/sum(table[6,]))
+
+# Hip-Hop: .44
+data1 <- c(data1, table[7,7]/sum(table[7,]))
+
+# Hip Hop or rap? .79
+# data1 <- c(data1, (table[7,7] + table[7,9])/sum(table[7,]))
+
+# Jazz: .50
+data1 <- c(data1, table[8,8]/sum(table[8,]))
+
+# Jazz or Blues? .62
+# data1 <- c(data1, (table[8,8] + table[8,3])/sum(table[8,]))
+
+# Rap: .43
+data1 <- c(data1, table[9,9] /sum(table[9,]))
+
+# Rap or Hip Hop? .88
+# data1 <- c(data1, (table[9,9] + table[9,7])/sum(table[9,]))
+
+# Rock: .53
+data1 <- c(data1, table[10,10] /sum(table[10,]))
+
+# Rock or Alt? .65
+# data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
+```
+This next model includes the following variables (does not include `key`):
+
+* `popularity`
+* `danceability`
+* `duration_ms`
+* `energy`
+* `instrumentalness`
+* `liveness`
+* `mode`
+* `speechiness`
+* `tempo`
+* `valence`
+
+All variables are statistically significant according to 2-tailed Wald tests at the $\alpha$ = 0.05 level.
+
+```{r}
+# build model2
+multinomModel2 <- multinom(music_genre ~ popularity + danceability + duration_ms + energy + instrumentalness + liveness + mode + speechiness + tempo + valence, data=training) # multinom Model
+
+model2 <- summary(multinomModel2) 
+model2
+
+z <- model2$coefficients/model2$standard.errors
+# 2-tailed Wald z tests to test significance of coefficients
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+print("Wald Test P-Values: ")
+p
+```
+
+Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. But could we get higher accuracy scores by creating individual models for each genre?
+
+
+```{r, results = 'markup'}
+# see how model2 does
+
+predicted_class2 <- predict (multinomModel2, test)
+
+# All
+table = table(predicted_class2, test$music_genre)
+# mean(as.character(predicted_class2) != as.character(test$music_genre))
+
+# Alt: .37
+data2 <- c(data2, table[1,1]/sum(table[1,]))
+
+# Alt or Rock? .52
+# data2 <- c(data2, (table[1,1] + table[1,10])/sum(table[1,]))
+
+# Anime: .61
+data2 <- c(data2, table[2,2]/sum(table[2,]))
+
+# Blues: .49
+data2 <- c(data2, table[3,3]/sum(table[3,]))
+
+# Blues or Jazz? .62
+# data2 <- c(data2, (table[3,3] + table[3,8])/sum(table[3,]))
+
+# Class: .71
+data2 <- c(data2, table[4,4]/sum(table[4,]))
+
+# Country: .43
+data2 <- c(data2, table[5,5]/sum(table[5,]))
+
+# Elec: .56
+data2 <- c(data2, table[6,6]/sum(table[6,]))
+
+# Hip-Hop: .46
+data2 <- c(data2, table[7,7]/sum(table[7,]))
+
+# Hip Hop or rap? .79
+# data2 <- c(data2, (table[7,7] + table[7,9])/sum(table[7,]))
+
+# Jazz: .52
+data2 <- c(data2, table[8,8]/sum(table[8,]))
+
+# Jazz or Blues? .63
+# data2 <- c(data2, (table[8,8] + table[8,3])/sum(table[8,]))
+
+# Rap: .42
+data2 <- c(data2, table[9,9] /sum(table[9,]))
+
+# Rap or Hip Hop? .87
+# data2 <- c(data2, (table[9,9] + table[9,7])/sum(table[9,]))
+
+# Rock: .53
+data2 <- c(data2, table[10,10] /sum(table[10,]))
+
+# Rock or Alt? .66
+# data2 <- c(data2, (table[10,10] + table[10,1])/sum(table[10,]))
+```
+
+To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
+
+```{r, results = 'markup'}
+# Logit models by genre
+
+# make list of genres 
+gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
+
+# set seed
+set.seed(100)
+
+# create list 
+data3 = list()
+
+for (genre in gens) {
+# create balanced dataset
+  music$selgen <- ifelse(music$music_genre == genre, 1, 0)
+  selectGenre <- music[music$selgen == 1, ]
+  otherGenre <- music[music$selgen == 0, ]
+  otherGenre_sample <- sample(1:nrow(otherGenre), nrow(selectGenre))
+  otherGenre <- otherGenre[otherGenre_sample, ]
+  modelData <- data.frame(rbind(selectGenre, otherGenre))
+
+# split into test/train
+  trainingRows <- sample(1:nrow(modelData), 0.7*nrow(modelData))
+  training <- modelData[trainingRows, ]
+  test <- modelData[-trainingRows, ]
+
+# model
+  Model <- glm(selgen ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data = modelData, family = "binomial")
+
+  print(genre)
+  print(summary(Model))
+  music$predselgen <- round(predict(Model, newdata = music, type = "response"))
+  table = table(music$selgen, music$predselgen)
+  accuracy = (table[1,1] + table[2,2]) / nrow(music)
+  data3 = c(data3, accuracy)
+}
+
+```
+
+Below is a table comparing the accuracy of all the different logit models. The baseline accuracy score for the individual models is 0.5, as compared to 0.1 for the multinomial models. Depending on the application, it may be more useful to choose one model over another. While the accuracy scores are higher for each genre as a whole when individual models are used, information on what the next highest predicted genre would be is lost. When dealing with songs that are in cusp genres (like Alternative) or are otherwise different than their typical genre, individual models may be less useful than the multinomial model. 
+
+```{r, results = 'markup'}
+# make results of two model accuracies by genre into a df
+
+df = data.frame(unlist(data1), unlist(data2), unlist(data3), row.names = gens)
+names(df) = c("Model 1", "Model 2", "Genre Spec. Model")
+df
+```
+
+Now, how do predictions work? The most interesting predictions to look at are from the multinomial model, which tells us (if incorrect) what the predicted genre actually is.
+
+In this sample, every rock song was predicted correctly, however there are a few notable mistakes; the Anime songs are both classified as classical, the electronic song is classified as jazz (though, the repeated chords do have a jazz sound to them), and the operatic classic "La Donna è Mobile" was classified as rock. 
+
+```{r, results = 'markup'}
+test$predicted <- predicted_class2 <- predict (multinomModel2, test)
+set.seed(369)
+sample_n(test[, c(1, 2, 3, 18, 21)], 10)
+```
+Interestingly, classical wasn't even the second closest match for "La Donna è Mobile," but country. 
+
+```{r, results = 'markup'}
+predict (multinomModel2, test[ test$instance_id == '38780', ], type = 'probs')
+```
+
+However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
+
+```{r}
+# make list of genres 
+gens <- "Classical"
+
+# set seed
+set.seed(100)
+
+# create list 
+data3 = list()
+
+for (genre in gens) {
+# create balanced dataset
+  music$selgen <- ifelse(music$music_genre == genre, 1, 0)
+  selectGenre <- music[music$selgen == 1, ]
+  otherGenre <- music[music$selgen == 0, ]
+  otherGenre_sample <- sample(1:nrow(otherGenre), nrow(selectGenre))
+  otherGenre <- otherGenre[otherGenre_sample, ]
+  modelData <- data.frame(rbind(selectGenre, otherGenre))
+
+# split into test/train
+  trainingRows <- sample(1:nrow(modelData), 0.7*nrow(modelData))
+  training <- modelData[trainingRows, ]
+  test <- modelData[-trainingRows, ]
+
+# model
+  Model_Class <- glm(selgen ~ popularity + danceability + duration_ms + energy + instrumentalness + key + liveness + mode + speechiness + tempo + valence, data = modelData, family = "binomial")
+
+  music$predselgen <- round(predict(Model_Class, newdata = music, type = "response"))
+  table = table(music$selgen, music$predselgen)
+  accuracy = (table[1,1] + table[2,2]) / nrow(music)
+  data3 = c(data3, accuracy)
+}
+```
+
+```{r}
+predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')
+```
+
+# Section V: KNN
+
+# Section VI: Decision Tree
+
+# Section VII: Conclusion
+
+## Overall Results 
+
+## Lessons Learned and Model Improvement 
