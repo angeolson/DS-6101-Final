@@ -181,6 +181,46 @@ ggplot(genrex, aes(x = music_genre, y = popularity)) + geom_bar()
 ```
 
 ```{r, results='markup'}
+#boxplot(genrex[,1:3])
+ggplot(genrex, aes(music_genre, popularity, fill = music_genre)) +    
+  geom_bar(stat = "identity") +
+  labs(title='Popularity of each music_genre')
+
+ggplot(genrex, aes(music_genre, acousticness, fill = music_genre)) +    
+  geom_bar(stat = "identity") +
+   labs(title='Acoustiness of each music_genre')
+
+ggplot(genrex, aes(music_genre, danceability, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Danceability of each music_genre')
+
+ggplot(genrex, aes(music_genre, duration_ms, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Duration (ms) of each music_genre')
+
+ggplot(genrex, aes(music_genre, energy, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Energy of each music_genre')
+
+ggplot(genrex, aes(music_genre, instrumentalness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Instrumentalness of each music_genre')
+
+ggplot(genrex, aes(music_genre, liveness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Liveness of each music_genre')
+
+ggplot(genrex, aes(music_genre, loudness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +  scale_y_reverse() +
+   labs(title='Loudness of each music_genre')
+```
+
+```{r, results='markup'}
+ggplot(genrex, aes(x = music_genre, y = 100, fill = blues9)) + 
+  geom_bar(stat = "identity")
+```
+
+```{r, results='markup'}
 # Scatterplot to see energy of the song by genre wise
 library(ggplot2)
 library(ggpubr)
