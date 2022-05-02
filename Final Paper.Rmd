@@ -31,7 +31,7 @@ Reading in the dataset, all variables read in as expected.
 music = data.frame(read.csv("music_genre.csv"))
 ```
 
-First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(genres)` genres, each with roughly 4,500 obersvations, making this a balanced dataset.  
+First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(genres)` genres, each with roughly 4,500 observations, making this a balanced dataset.  
 
 ```{r, results = 'markup'}
 library(dplyr)
@@ -85,6 +85,8 @@ anova_results
 
 # Section IV: Logit Modeling
 
+We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
+
 ```{r}
 #setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
 music = data.frame(read.csv("music_genre.csv"))
@@ -104,7 +106,7 @@ music$tempo <- as.numeric(music$tempo)
 music = music[!(is.na(music$tempo)),]
 ```
 
-First, we look to see which variables are correlated with each other to ensure we are not included variables that are too correlated in our model. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
+Before develping our model, we look to see which variables are correlated with each other to ensure we are not including variables that are too correlated. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
 
 ```{r, results='markup'}
 loadPkg("corrplot")
@@ -120,7 +122,7 @@ training <- music[trainingRows, ]
 test <- music[-trainingRows, ]
 ```
 
-First, we build a multinomial Logit model with the following variables:
+Our first multinomial Logit model includes the following variables:
 
 * `popularity`
 * `danceability`
