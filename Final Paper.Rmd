@@ -158,9 +158,9 @@ data2 <-list()
 #cols <- c("Alt", "Alt-Rock", "Anime", "Blues", "Blues-Jazz", "Class", "Country", "Elec", "Hip-Hop", "HH-Rap", "Jazz", "Jazz-Blues", "Rap", "Rap-HH", "Rock", "Rock-Alt")
 ```
 
-Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alterantive `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` to and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
+Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
 
-If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement. Next, we look to see if we can simplify the model without sacrificing accuracy. 
+If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
 ```{r, results = 'markup'}
 # see how model1 does
@@ -216,7 +216,8 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 # Rock or Alt? .65
 # data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
-This next model includes the following variables (does not include `key`):
+
+This next model includes the following variables (does not include `key` to try and simplify the model):
 
 * `popularity`
 * `danceability`
@@ -245,7 +246,16 @@ print("Wald Test P-Values: ")
 p
 ```
 
-Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. But could we get higher accuracy scores by creating individual models for each genre?
+Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. Still, accuracy for some genres (notably Alternative) could be improved, and we will look to create binomial logit models.
+
+In terms of genre characteristics, both multinomial models tell us that compared to Alternative music:
+
+* Hip Hop, Rap, and Rock are the most popular 
+* Country, Electronic, Hip Hop, Jazz, and Rap are the most danceable
+* Country and Anime songs are shorter
+* Electronic and Anime songs have higher energy
+* Electronic, Hip Hop, and Rap songs are not very happy 
+* Jazz, Blues, and Classical songs tend to be slower 
 
 
 ```{r, results = 'markup'}
@@ -307,6 +317,8 @@ data2 <- c(data2, table[10,10] /sum(table[10,]))
 ```
 
 To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
+
+
 
 ```{r, results = 'markup'}
 # Logit models by genre
