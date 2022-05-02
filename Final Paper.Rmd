@@ -217,6 +217,24 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 # data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
 
+Accuracy rates for each genre are listed below:
+
+```{r, results = 'markup'}
+gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
+model1_data = data.frame(unlist(data1), row.names = gens)
+names(df) = "Model 1"
+model1_data
+```
+
+Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each other. If we consider these genres with expected overlap and similarities as "successes" if predicted, accuracy rates change to the following: 
+
+* Predicting Alternative (accept Alternative or Rock): `r (table[1,1] + table[1,10])/sum(table[1,])`
+* Predicting Rock (accept Alternative or Rock): `r (table[10,10] + table[10,1])/sum(table[10,])`
+* Predicting Jazz (accept Jazz or Blues): `r (table[8,8] + table[8,3])/sum(table[8,])`
+* Predicting Blues (accept Jazz or Blues): `r `(table[3,3] + table[3,8])/sum(table[3,])`
+* Predicting Hip Hop (accept Hip Hop or Rap): `r (table[7,7] + table[7,9])/sum(table[7,])`
+* Predicting Rap (accept Hip Hop or Rap): `r (table[9,9] + table[9,7])/sum(table[9,])`
+
 This next model includes the following variables (does not include `key` to try and simplify the model):
 
 * `popularity`
@@ -256,6 +274,8 @@ In terms of genre characteristics, both multinomial models tell us that compared
 * Electronic and Anime songs have higher energy
 * Electronic, Hip Hop, and Rap songs are not very happy 
 * Jazz, Blues, and Classical songs tend to be slower 
+
+
 
 
 ```{r, results = 'markup'}
