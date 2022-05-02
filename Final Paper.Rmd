@@ -31,7 +31,7 @@ Reading in the dataset, all variables read in as expected.
 music = data.frame(read.csv("music_genre.csv"))
 ```
 
-First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(genres)` genres, each with roughly 4,500 observations, making this a balanced dataset.  
+First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(music$music_genre)` genres, each with roughly 4,500 observations, making this a balanced dataset.  
 
 ```{r, results = 'markup'}
 library(dplyr)
@@ -158,9 +158,6 @@ data2 <-list()
 #cols <- c("Alt", "Alt-Rock", "Anime", "Blues", "Blues-Jazz", "Class", "Country", "Elec", "Hip-Hop", "HH-Rap", "Jazz", "Jazz-Blues", "Rap", "Rap-HH", "Rock", "Rock-Alt")
 ```
 
-Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
-
-If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
 ```{r, results = 'markup'}
 # see how model1 does
@@ -217,12 +214,17 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 # data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
 
+Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
+
+If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
+
+
 Accuracy rates for each genre are listed below:
 
 ```{r, results = 'markup'}
 gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
 model1_data = data.frame(unlist(data1), row.names = gens)
-names(df) = "Model 1"
+names(model1_data) = "Model 1"
 model1_data
 ```
 
@@ -264,7 +266,7 @@ print("Wald Test P-Values: ")
 p
 ```
 
-Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. Still, accuracy for some genres (notably Alternative) could be improved, and we will look to create binomial logit models.
+Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(test$predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. Still, accuracy for some genres (notably Alternative) could be improved, and we will look to create binomial logit models.
 
 In terms of genre characteristics, both multinomial models tell us that compared to Alternative music:
 
@@ -336,11 +338,18 @@ data2 <- c(data2, table[10,10] /sum(table[10,]))
 
 To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
 
-Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres. Not that 'strongest predictors' are determined by the magnitude of the coeffiicent of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these comparisons justified.
+Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres. Not that 'strongest predictors' are determined by the magnitude of the coeffiicent of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
 
 * Alternative: more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
 * Anime: more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
 * Blues: more likely to contain a wider variety of keys (including those less common to other genres), more likely to be in a minor key. *Strongest Predictors*: not danceable, not instrumental, not speechy, happy.
+* Classical: less popular. *Strongest Predictors*: not danceable, energetic, instrumental.
+* Country: Danceable and happy. *Strongest Predictors*: Not instrumental, not in minor keys. 
+* Electronic: *Strongest Predictors/Characteristics*: Very danceable, very instrumental, very energetic, not happy.
+* Hip Hop: More popular, more likley to be in a minor key. *Strongest Predictors*: Very danceable, not instrumental, very speechy, not happy.
+* Jazz: Similar to the Blues, more likely to contain a wider variety of keys (including those less common to other genres) and also more likely to be in a minor key. *Strongest Predictors*: danceable, not energetic, instrumental, not speechy, happy.
+* Rap: More popular, energetic. *Strongest Predictors*: danceable, not instrumental, speecy, not happy.
+* Rock: More popular, less likley to be in minor keys. *Strongest Predictors*: not danceable, energetic, happy.  
 
 
 ```{r, results = 'markup'}
@@ -382,7 +391,7 @@ for (genre in gens) {
 
 ```
 
-Below is a table comparing the accuracy of all the different logit models. The baseline accuracy score for the individual models is 0.5, as compared to 0.1 for the multinomial models. Depending on the application, it may be more useful to choose one model over another. While the accuracy scores are higher for each genre as a whole when individual models are used, information on what the next highest predicted genre would be is lost. When dealing with songs that are in cusp genres (like Alternative) or are otherwise different than their typical genre, individual models may be less useful than the multinomial model. 
+Below is a table comparing the accuracy of all the different logit models. The baseline accuracy score for the individual models is 0.5 (1 in 2 chance of randomly guessing correctly), as compared to 0.1 for the multinomial models. Depending on the application, it may be more useful to choose one model over another. While the accuracy scores are higher for each genre as a whole when individual models are used, information on what the next highest predicted genre would be is lost. When dealing with songs that are in cusp genres (like Alternative) or are otherwise different than their typical genre, individual models may be less useful than the multinomial model. 
 
 ```{r, results = 'markup'}
 # make results of two model accuracies by genre into a df
@@ -407,7 +416,6 @@ Interestingly, classical wasn't even the second closest match for "La Donna è M
 predict (multinomModel2, test[ test$instance_id == '38780', ], type = 'probs')
 ```
 
-However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
 
 ```{r}
 # make list of genres 
@@ -447,6 +455,8 @@ for (genre in gens) {
 predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')
 ```
 
+However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
+
 # Section V: KNN
 
 # Section VI: Decision Tree
@@ -455,4 +465,16 @@ predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')
 
 ## Overall Results 
 
+In sum, we found that the best predictors of a specific musical genre in terms of accuracy alone were our genre-specific models. Our binomial logit models and KNN models performed nearly identically for the selected genres, and our decision tree models provided some slight improvements over the logit and KNN models for most genres. Notably, the decision tree models for Alternative music and Jazz provide substantial improvement. 
+
+However, while accuracy with these models is improved, they do not tell us much about why misclassification is occuring or where the predicted next best fits for a model are. Depending on the application of the models, a multinomial model may be a better fit. For example, if the goal is to use music features to automatically create playlists for each singular genre, our binary choice models are likley the better solution. However, for an artist curious to see where their style of music falls on more of spectrum, or an individual looking for music in a genre that's not what they typically listen too, but similar to their preferred genre, the multinomial model may be a better fit, even if accuracy is diminished.
+
 ## Lessons Learned and Model Improvement 
+
+A next step to improve our models with the data we have readily available could be textual analysis of artist names and/or song titles. Anecdotally, we can look at a subsample of our predicted data
+
+```{r, results = 'markup'}
+test$predicted <- predicted_class2 <- predict (multinomModel2, test)
+set.seed(369)
+sample_n(test[, c(1, 2, 3, 18, 21)], 10)
+```
