@@ -25,13 +25,11 @@ library(nnet)
 
 ## Data Loading and Cleaning
 
-Reading in the dataset, all variables read in as expected.
-
 ```{r}
 music = data.frame(read.csv("music_genre.csv"))
 ```
 
-First, we look at how many genresow many genres there are and how many observations are in each genre. In the table below, we see that we are lookng at `r nrow(music$music_genre)` genres, each with roughly 4,500 observations, making this a balanced dataset.  
+First, we look at how many genres there are and how many observations are in each genre. In the table below, we see that we are looking at `r nrow(music$music_genre)` genres, each with roughly 4,500 observations, making this a balanced dataset. We remove blank (" ") genres.
 
 ```{r, results = 'markup'}
 library(dplyr)
@@ -65,8 +63,24 @@ tempoNA <- music %>%
 tempoNA
 # not enough to cause concern 
 ```
+```{r}
 
-Below, we test for statistically significant differences in our continuous variables and find that all show differences in means.
+# drop those blank genre values 
+music = music[!(music$music_genre == ""),]
+
+# key, mode, genre as factor
+music$key <- factor(music$key)
+music$mode <- factor(music$mode)
+music$music_genre <- factor(music$music_genre)
+
+# tempo as numeric
+music$tempo <- as.numeric(music$tempo)
+
+# drop na values
+music = music[!(is.na(music$tempo)),]
+```
+
+Below, we test for statistically significant differences in our continuous variables using ANOVA tests and find that all show differences in means.
 
 ```{r, results = 'markup'}
 # simplify dataset 
@@ -86,25 +100,6 @@ anova_results
 # Section IV: Logit Modeling
 
 We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
-
-```{r}
-#setwd("/Users/angelinaolson/Desktop/GW/Intro DATS 6101")
-music = data.frame(read.csv("music_genre.csv"))
-
-# drop those blank genre values 
-music = music[!(music$music_genre == ""),]
-
-# key, mode, genre as factor
-music$key <- factor(music$key)
-music$mode <- factor(music$mode)
-music$music_genre <- factor(music$music_genre)
-
-# tempo as numeric
-music$tempo <- as.numeric(music$tempo)
-
-# drop na values
-music = music[!(is.na(music$tempo)),]
-```
 
 Before develping our model, we look to see which variables are correlated with each other to ensure we are not including variables that are too correlated. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
 
@@ -147,9 +142,13 @@ model1
 
 z <- model1$coefficients/model1$standard.errors
 # 2-tailed Wald z tests to test significance of coefficients
+```
+
+Below are the p-values for the coefficients of the model based on Wald 2-sample tests. All p values are below 0.05. 
+
+```{r}
 p <- (1 - pnorm(abs(z), 0, 1)) * 2
-print("Wald Test P-Values: ")
-p
+xkabledply(p, title = "P-Values for Coefficients in Model 1")
 ```
 
 ```{r}
@@ -163,7 +162,9 @@ data2 <-list()
 # see how model1 does
 
 predicted_class <- predict (multinomModel, test)
-table = table(predicted_class, test$music_genre)
+table <- table(predicted_class, test$music_genre)
+xkabledply(table, title = "Model 1 Confusion Matrix")
+
 
 # Alt: .38
 data1 <- c(data1, table[1,1]/sum(table[1,]))
@@ -214,7 +215,7 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 # data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
 
-Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(data1, table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r c(data1, table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r c(data1, (table[1,1] + table[1,10])/sum(table[1,]))` and Rap to `c(data1, (table[9,9] + table[9,7])/sum(table[9,]))`. 
+Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
@@ -224,8 +225,8 @@ Accuracy rates for each genre are listed below:
 ```{r, results = 'markup'}
 gens <- c("Alternative", "Anime", "Blues", "Classical", "Country", "Electronic", "Hip-Hop", "Jazz", "Rap", "Rock")
 model1_data = data.frame(unlist(data1), row.names = gens)
-names(model1_data) = "Model 1"
-model1_data
+names(model1_data) = "Accuracy"
+xkabledply(model1_data, title = "Accuracy")
 ```
 
 Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each other. If we consider these genres with expected overlap and similarities as "successes" if predicted, accuracy rates change to the following: 
@@ -233,7 +234,7 @@ Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each ot
 * Predicting Alternative (accept Alternative or Rock): `r (table[1,1] + table[1,10])/sum(table[1,])`
 * Predicting Rock (accept Alternative or Rock): `r (table[10,10] + table[10,1])/sum(table[10,])`
 * Predicting Jazz (accept Jazz or Blues): `r (table[8,8] + table[8,3])/sum(table[8,])`
-* Predicting Blues (accept Jazz or Blues): `r `(table[3,3] + table[3,8])/sum(table[3,])`
+* Predicting Blues (accept Jazz or Blues): `r (table[3,3] + table[3,8])/sum(table[3,])`
 * Predicting Hip Hop (accept Hip Hop or Rap): `r (table[7,7] + table[7,9])/sum(table[7,])`
 * Predicting Rap (accept Hip Hop or Rap): `r (table[9,9] + table[9,7])/sum(table[9,])`
 
@@ -284,8 +285,9 @@ In terms of genre characteristics, both multinomial models tell us that compared
 predicted_class2 <- predict (multinomModel2, test)
 
 # All
-table = table(predicted_class2, test$music_genre)
+table <- table(predicted_class2, test$music_genre)
 # mean(as.character(predicted_class2) != as.character(test$music_genre))
+xkabledply(table, title = "Model 2 Confusion Matrix")
 
 # Alt: .37
 data2 <- c(data2, table[1,1]/sum(table[1,]))
@@ -398,17 +400,18 @@ Below is a table comparing the accuracy of all the different logit models. The b
 
 df = data.frame(unlist(data1), unlist(data2), unlist(data3), row.names = gens)
 names(df) = c("Model 1", "Model 2", "Genre Spec. Model")
-df
+xkabledply(df, title = "Model Accuracy Comparisons")
 ```
 
 Now, how do predictions work? The most interesting predictions to look at are from the multinomial model, which tells us (if incorrect) what the predicted genre actually is.
 
-In this sample, every rock song was predicted correctly, however there are a few notable mistakes; the Anime songs are both classified as classical, the electronic song is classified as jazz (though, the repeated chords do have a jazz sound to them), and the operatic classic "La Donna è Mobile" was classified as rock. 
+In this sample, there are a few notable mistakes; the Anime songs are both classified as classical, the electronic song is classified as jazz (though, the repeated chords do have a jazz sound to them), and the operatic classic "La Donna è Mobile" was classified as country. "Under the Pressure" was classified as rap, though in a previous iteration (with a different random sample not shown) this song was correctly classified as rock. 
 
 ```{r, results = 'markup'}
 test$predicted <- predicted_class2 <- predict (multinomModel2, test)
 set.seed(369)
-sample_n(test[, c(1, 2, 3, 18, 21)], 10)
+samples <- sample_n(test[, c(1, 2, 3, 18, 21)], 10)
+xkabledply(samples, title = "Sample Predictions")
 ```
 Interestingly, classical wasn't even the second closest match for "La Donna è Mobile," but country. 
 
@@ -452,7 +455,7 @@ for (genre in gens) {
 ```
 
 ```{r}
-predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')
+predict(Model_Class, test[ test$instance_id == '38780', ], type = 'response')
 ```
 
 However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
@@ -471,10 +474,10 @@ However, while accuracy with these models is improved, they do not tell us much 
 
 ## Lessons Learned and Model Improvement 
 
-A next step to improve our models with the data we have readily available could be textual analysis of artist names and/or song titles. Anecdotally, we can look at a subsample of our predicted data
+A next step to improve our models with the data we have readily available could be text analysis of artist names and/or song titles. Anecdotally, we can look at the subsample of our predicted data to see how text analysis would improve our model. For example, "追憶 - ゆきわりそう" is in Japanese; we may (or may not) want to associate songs with titles in Japanese more heavily with the Anime genre. Additionally, many classical songs contain numbers in the title (Act 3, Sonata No. 4). Looking at the title, one could guess that "La Donna é Mobile" would be classical rather than country. 
+
+We could also consider adding interaction variables to adjust the weight given to certain factors. For example, "Under the Pressure" may be at risk of misclassification as rap because the words of the song are primarily spoken. However, it is also highly instrumental, which rap is not. By interacting these two variables, perhaps we would give less weight to speechiness (a strong predictor of rap) when the track is instrumental ('not instrumental' being a strong predictor of rap) and this would lead to tracks like this one not being misclassified. This could be done for other genres with a strong positive predictor and strong negative predictor. 
 
 ```{r, results = 'markup'}
-test$predicted <- predicted_class2 <- predict (multinomModel2, test)
-set.seed(369)
-sample_n(test[, c(1, 2, 3, 18, 21)], 10)
+xkabledply(samples, title = "Sample Predictions")
 ```
