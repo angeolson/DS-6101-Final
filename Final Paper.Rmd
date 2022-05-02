@@ -276,8 +276,6 @@ In terms of genre characteristics, both multinomial models tell us that compared
 * Jazz, Blues, and Classical songs tend to be slower 
 
 
-
-
 ```{r, results = 'markup'}
 # see how model2 does
 
@@ -338,6 +336,11 @@ data2 <- c(data2, table[10,10] /sum(table[10,]))
 
 To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
 
+Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres. Not that 'strongest predictors' are determined by the magnitude of the coeffiicent of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these comparisons justified.
+
+* Alternative: more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
+* Anime: more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
+* Blues: more likely to contain a wider variety of keys (including those less common to other genres), more likely to be in a minor key. *Strongest Predictors*: not danceable, not instrumental, not speechy, happy.
 
 
 ```{r, results = 'markup'}
