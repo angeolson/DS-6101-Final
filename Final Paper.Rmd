@@ -33,10 +33,23 @@ Spotify, a leading music streaming service, collects metadata on the songs on it
 * **Instrumentalness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that a song contains no vocals. According to Spotify, Rap and spoken word are vocal, with any value above 0.5 a likely vocal track.
 * **Liveness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that there is an audience in a recording (i.e. that the song was recorded live and/or at a concert). According to Spotify, "a value above 0.8 provides strong likelihood that the track is live."
 * **Loudness:** On a continuous scale, this measures in decibels (dB) the loudness of a song averaged over its entire duration (Sptofy can provide different measurements for this feature for different parts of a song). According to Spotify, "loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude)." Values tend to exist between -60 and 0 db.
-* **Speechiness:** In contrast to 'instrumentalness,' a continuous scale of 0.0 to 1.0 this measure descriebd teh confidence that a given song (or track) is more "exclusively speech-like." As examples, Spotify notes that podcasts, audio books, or true spoken word tracks will score close to 1.0 (though anything over 0.66 likely falls in this category), an rap exists between 0.33 and 0.66 typically. Anything below 0.33 is what we would generally consider traditional music. 
-* **Valence:** On a continuous scale of 0.0 to 1.0, this measure decribes the musical positiveness/happiness of a track. A score clsoer to 1.0 suggests the song is very happy, where a score closer to 0.0 suggests that the song is sad or angry. 
+* **Speechiness:** In contrast to 'instrumentalness,' a continuous scale of 0.0 to 1.0 this measure describes the confidence that a given song (or track) is more "exclusively speech-like." As examples, Spotify notes that podcasts, audio books, or true spoken word tracks will score close to 1.0 (though anything over 0.66 likely falls in this category), an rap exists between 0.33 and 0.66 typically. Anything below 0.33 is what we would generally consider traditional music. 
+* **Valence:** On a continuous scale of 0.0 to 1.0, this measure decribes the musical positiveness/happiness of a track. A score closer to 1.0 suggests the song is very happy, where a score closer to 0.0 suggests that the song is sad or angry. 
 
-Spotify collects other useful data elements as well, including tempo (beats per measure), key (A, A#, B, etc.), 
+Spotify collects other useful data elements as well, including tempo (beats per measure); key, a categorical variable denoting the key of a song (A, A#, B, etc.) as an integer; and mode (major or minor) as a binary variable. 
+
+With this data, we aim to see if we can predict music genre through modelling techniques including Logistic regression, KNN modeling, and categorical decision trees. The accuracy scores of these give a sense of how challenging it is to determine genre based on these audio features (and for which genres it is most challenging). The coefficients, or weight/importance given to each feature, can tell us which features relate most strongly to which genres and can help us quantify what it means to be in genre x or genre y. These findings serve to answer our SMART questions, listed below and defined in Section II:
+
+* What are key characteristics of each genre?
+* What genres of music are least distinguishable from each other?
+* Which genre(s) is/are the easiest to predict?
+
+In sum, we find our models that focused on predicting whether or not a song fell into a specific genre or not to be more accurate (e.g. is this song Rock, or anything else?), however in terms of interpreting our predictions, our multinomial logit model was the most useful because it allowed us to see 1) where we failed to predict the genre successfully, why and 2) where we predict successfully (or not), what other genres is a song most similar to. 
+
+
+# Section II: SMART Questions and Model Selection 
+
+# Section III: EDA
 
 ## Data Loading and Cleaning
 
@@ -107,10 +120,6 @@ anova_results <- purrr::map(musicNum[,1:11], ~summary(aov(.x ~ musicNum$music_ge
 anova_results
 ```
 
-# Section II: EDA
-
-
-# Section III: SMART Questions and Model Selection 
 
 # Section IV: Logit Modeling
 
@@ -485,7 +494,7 @@ However, when using a model calibrated to predict classical or not, "La Donna è
 
 In sum, we found that the best predictors of a specific musical genre in terms of accuracy alone were our genre-specific models. Our binomial logit models and KNN models performed nearly identically for the selected genres, and our decision tree models provided some slight improvements over the logit and KNN models for most genres. Notably, the decision tree models for Alternative music and Jazz provide substantial improvement. 
 
-However, while accuracy with these models is improved, they do not tell us much about why misclassification is occuring or where the predicted next best fits for a model are. Depending on the application of the models, a multinomial model may be a better fit. For example, if the goal is to use music features to automatically create playlists for each singular genre, our binary choice models are likley the better solution. However, for an artist curious to see where their style of music falls on more of spectrum, or an individual looking for music in a genre that's not what they typically listen too, but similar to their preferred genre, the multinomial model may be a better fit, even if accuracy is diminished.
+However, while accuracy with these models is improved, they do not tell us much about why misclassification is occurring or where the predicted next best fits for a model are. Depending on the application of the models, a multinomial model may be a better fit. For example, if the goal is to use music features to automatically create playlists for each singular genre, our binary choice models are likely the better solution. However, for an artist curious to see where their style of music falls on more of spectrum, or an individual looking for music in a genre that's not what they typically listen too, but similar to their preferred genre, the multinomial model may be a better fit, even if accuracy is diminished.
 
 ## Lessons Learned and Model Improvement 
 
