@@ -253,9 +253,13 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 
 
 
-Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
+Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
+
+Based on the confusion matrix, we can see which genres are most similar to each other based on this model. For example, when a country song is not being predicted as country (the prediction with the highest frequency), the second most-likely prediction is Alternative. 
+
+
 
 
 Accuracy rates for each genre are listed below:
@@ -267,7 +271,7 @@ names(model1_data) = "Accuracy"
 xkabledply(model1_data, title = "Accuracy")
 ```
 
-Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each other. If we consider these genres with expected overlap and similarities as "successes" if predicted, accuracy rates change to the following: 
+Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each other. This is based in part on anecdotal knowledge and in part on the results from the confusion matrix above (e.g. is Rock a common missclassification of Aleternative?). If we consider these genres with expected overlap and similarities as "successes" if predicted, accuracy rates change to the following: 
 
 * Predicting Alternative (accept Alternative or Rock): `r (table[1,1] + table[1,10])/sum(table[1,])`
 * Predicting Rock (accept Alternative or Rock): `r (table[10,10] + table[10,1])/sum(table[10,])`
@@ -308,8 +312,6 @@ p
 ```
 
 ### Model II Performance 
-
-
 
 
 ```{r, results = 'markup'}
@@ -389,16 +391,16 @@ To prep the data for individual models, we create subsets of the data that are b
 
 Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres. Not that 'strongest predictors' are determined by the magnitude of the coeffiicent of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
 
-* Alternative: more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
-* Anime: more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
-* Blues: more likely to contain a wider variety of keys (including those less common to other genres), more likely to be in a minor key. *Strongest Predictors*: not danceable, not instrumental, not speechy, happy.
-* Classical: less popular. *Strongest Predictors*: not danceable, energetic, instrumental.
-* Country: Danceable and happy. *Strongest Predictors*: Not instrumental, not in minor keys. 
-* Electronic: *Strongest Predictors/Characteristics*: Very danceable, very instrumental, very energetic, not happy.
-* Hip Hop: More popular, more likley to be in a minor key. *Strongest Predictors*: Very danceable, not instrumental, very speechy, not happy.
-* Jazz: Similar to the Blues, more likely to contain a wider variety of keys (including those less common to other genres) and also more likely to be in a minor key. *Strongest Predictors*: danceable, not energetic, instrumental, not speechy, happy.
-* Rap: More popular, energetic. *Strongest Predictors*: danceable, not instrumental, speecy, not happy.
-* Rock: More popular, less likley to be in minor keys. *Strongest Predictors*: not danceable, energetic, happy.  
+* **Alternative:** more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
+* **Anime:** more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
+* **Blues:** more likely to contain a wider variety of keys (including those less common to other genres), more likely to be in a minor key. *Strongest Predictors*: not danceable, not instrumental, not speechy, happy.
+* **Classical:** less popular. *Strongest Predictors*: not danceable, energetic, instrumental.
+* **Country:** Danceable and happy. *Strongest Predictors*: Not instrumental, not in minor keys. 
+* **Electronic:** *Strongest Predictors/Characteristics*: Very danceable, very instrumental, very energetic, not happy.
+* **Hip Hop:** More popular, more likley to be in a minor key. *Strongest Predictors*: Very danceable, not instrumental, very speechy, not happy.
+* **Jazz:** Similar to the Blues, more likely to contain a wider variety of keys (including those less common to other genres) and also more likely to be in a minor key. *Strongest Predictors*: danceable, not energetic, instrumental, not speechy, happy.
+* **Rap:** More popular, energetic. *Strongest Predictors*: danceable, not instrumental, speecy, not happy.
+* **Rock:** More popular, less likley to be in minor keys. *Strongest Predictors*: not danceable, energetic, happy.  
 
 
 ```{r, results = 'markup'}
