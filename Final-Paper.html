@@ -268,8 +268,8 @@ div.tocify {
 
 <div id="section-i-intro" class="section level1">
 <h1>Section I: Intro</h1>
-<p>What defines a music genre? According to Franco Fabbri, it is “a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules.” (Fabbri, 1982). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: “I know it when I hear it.” Still, is it possible to determine characteristics of a genre more scientifically? Such a finding could help inform playlist curation, help listeners explore new music and find tunes they might like based on similarity to preferred genre, or could help artists better understand their distinct sound.</p>
-<p>Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below:</p>
+<p>What defines a music genre? According to Franco Fabbri, it is “a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules.” (Fabbri, 1981). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: “I know it when I hear it.” Still, is it possible to determine characteristics of a genre more scientifically? Such a finding could help inform playlist curation, help listeners explore new music and find tunes they might like based on similarity to preferred genre, or could help artists better understand their distinct sound.</p>
+<p>Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below (Spotify, 2022):</p>
 <ul>
 <li><strong>Acousticness:</strong> On a continuous scale of 0.0 to 1.0, how confident Spotify is that a song is acoustic, with 1.0 representing high confidence.</li>
 <li><strong>Danceability:</strong> On a continuous scale of 0.0 to 1.0, how danceable a song is, where “danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.”</li>
@@ -1596,7 +1596,7 @@ data1 &lt;- c(data1, table[10,10] /sum(table[10,]))
 
 # Rock or Alt? .65
 # data1 &lt;- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))</code></pre>
-<p>Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is 0.5152884. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict (SMART Question III) were Alternative (accuracy: 0.3813481) and Rap (accuracy: 0.4334038. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as “correct,” accuracy jumps for Alternative to 0.5124654 and Rap to <code>r</code>(table[9,9] + table[9,7])/sum(table[9,])`.</p>
+<p>Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is 0.5152884. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict (SMART Question III) were Alternative (accuracy: 0.3813481) and Rap (accuracy: 0.4334038. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as “correct,” accuracy jumps for Alternative to 0.5124654 and Rap to 0.8805497.</p>
 <p>If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy.</p>
 <p>Based on the confusion matrix, we can see which genres are most similar to each other based on this model (SMART Question 2). For example, when a country song is not being predicted as country (the prediction with the highest frequency), the second most-likely prediction is Alternative.</p>
 <ul>
@@ -3348,6 +3348,11 @@ Classical
 </tbody>
 </table>
 </div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Fabbri, Franco. (1981). A Theory of Musical Genres: Two Applications. Retrieved from <a href="https://www.tagg.org/xpdfs/ffabbri81a.pdf" class="uri">https://www.tagg.org/xpdfs/ffabbri81a.pdf</a>.</p>
+<p>Spotify. (2022). Spotify Web API (Reference). Retrieved from <a href="https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features" class="uri">https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features</a>.</p>
 </div>
 
 

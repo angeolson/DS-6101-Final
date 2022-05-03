@@ -23,9 +23,9 @@ library(nnet)
 
 # Section I: Intro 
 
-What defines a music genre? According to Franco Fabbri, it is "a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules." (Fabbri, 1982). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: "I know it when I hear it." Still, is it possible to determine characteristics of a genre more scientifically? Such a finding could help inform playlist curation, help listeners explore new music and find tunes they might like based on similarity to preferred genre, or could help artists better understand their distinct sound.
+What defines a music genre? According to Franco Fabbri, it is "a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules." (Fabbri, 1981). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: "I know it when I hear it." Still, is it possible to determine characteristics of a genre more scientifically? Such a finding could help inform playlist curation, help listeners explore new music and find tunes they might like based on similarity to preferred genre, or could help artists better understand their distinct sound.
 
-Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below:
+Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below (Spotify, 2022):
 
 * **Acousticness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that a song is acoustic, with 1.0 representing high confidence.
 * **Danceability:** On a continuous scale of 0.0 to 1.0, how danceable a song is, where "danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity." 
@@ -253,7 +253,7 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 
 
 
-Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict (SMART Question III) were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
+Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict (SMART Question III) were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r (table[9,9] + table[9,7])/sum(table[9,])`. 
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
@@ -539,3 +539,9 @@ We could also consider adding interaction variables to adjust the weight given t
 ```{r, results = 'markup'}
 xkabledply(samples, title = "Sample Predictions")
 ```
+
+# References
+
+Fabbri, Franco. (1981). A Theory of Musical Genres: Two Applications. Retrieved from https://www.tagg.org/xpdfs/ffabbri81a.pdf. 
+
+Spotify. (2022). Spotify Web API (Reference). Retrieved from https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features. 
