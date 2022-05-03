@@ -23,7 +23,7 @@ library(nnet)
 
 # Section I: Intro 
 
-What defines a music genre? According to Franco Fabbri, it is "a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules." (Fabbri, 1982). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: "I know it when I hear it." Still, is it possible to determine characteristics of a genre more scientifically?
+What defines a music genre? According to Franco Fabbri, it is "a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules." (Fabbri, 1982). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: "I know it when I hear it." Still, is it possible to determine characteristics of a genre more scientifically? Such a finding could help inform playlist curation, help listeners explore new music and find tunes they might like based on similarity to preferred genre, or could help artists better understand their distinct sound.
 
 Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below:
 
@@ -38,16 +38,23 @@ Spotify, a leading music streaming service, collects metadata on the songs on it
 
 Spotify collects other useful data elements as well, including tempo (beats per measure); key, a categorical variable denoting the key of a song (A, A#, B, etc.) as an integer; and mode (major or minor) as a binary variable. 
 
-With this data, we aim to see if we can predict music genre through modelling techniques including Logistic regression, KNN modeling, and categorical decision trees. The accuracy scores of these give a sense of how challenging it is to determine genre based on these audio features (and for which genres it is most challenging). The coefficients, or weight/importance given to each feature, can tell us which features relate most strongly to which genres and can help us quantify what it means to be in genre x or genre y. These findings serve to answer our SMART questions, listed below and defined in Section II:
+With this data, we aim to see if we can predict music genre through modelling techniques including Logistic regression, KNN modeling, and categorical decision trees. The accuracy scores of these give a sense of how challenging it is to determine genre based on these audio features (and for which genres it is most challenging). The coefficients, or weight/importance given to each feature, can tell us which features relate most strongly to which genres and can help us quantify what it means to be in genre x or genre y. These findings serve to answer our SMART questions, defined in Section II.
 
-* What are key characteristics of each genre?
-* What genres of music are least distinguishable from each other?
-* Which genre(s) is/are the easiest to predict?
-
-In sum, we find our models that focused on predicting whether or not a song fell into a specific genre or not to be more accurate (e.g. is this song Rock, or anything else?), however in terms of interpreting our predictions, our multinomial logit model was the most useful because it allowed us to see 1) where we failed to predict the genre successfully, why and 2) where we predict successfully (or not), what other genres is a song most similar to. 
-
+In sum, we find our models that focused on predicting whether or not a song fell into a specific genre or not to be more accurate (e.g. is this song Rock, or anything else?), however in terms of interpreting our predictions, our multinomial logit model was the most useful because it allowed us to see 1) where we failed to predict the genre successfully and why and 2) where we predict successfully (or not), what other genres is a song most similar to. 
 
 # Section II: SMART Questions and Model Selection 
+
+We decided on three different SMART questions for our analysis:
+
+1. What are key characteristics of each genre?
+2. What genres of music are least distinguishable from each other?
+3. Which genre(s) is/are the easiest to predict?
+
+We aim to answer question one through our Exploratory Data Analysis (EDA). Identifying differences in the means of the various audio features we have chosen to study (listed in Section I) can tell us which genres are the happiest, the loudest, the most popular, etc. We can also determine this most clearly through our logit models. The coefficients on our individual binomial logit models can give us a good profile of each genre by informing what the most significant (and statistically significant) variables are specific to that genre. 
+
+Question two can be answered most clearly through our multinomial logit regression model, particularly by looking at areas of high misclassification and by seeing which genres have the most similar model coefficients. 
+
+Lastly, question three can be answered through a combination of all of our models. We look to see based on accuracy which models do poorly, and which perform well to determine which genres are the easiest to predict. 
 
 # Section III: EDA
 
@@ -125,7 +132,9 @@ anova_results
 
 We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
 
-Before develping our model, we look to see which variables are correlated with each other to ensure we are not including variables that are too correlated. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
+## Feature Selection
+
+Before developing our model, we look to see which variables are correlated with each other to ensure we are not including variables that are too correlated. As shown below, we don’t want to include both `energy` and `acousticness`, or both `acousticness` and `loudness`, or `energy` and `loudness`. Since `energy` is correlated with `loudness` and `acousticness`, we leave it in the models to capture both those effects. 
 
 ```{r, results='markup'}
 loadPkg("corrplot")
@@ -140,6 +149,8 @@ trainingRows <- sample(1:nrow(music), 0.7*nrow(music))
 training <- music[trainingRows, ]
 test <- music[-trainingRows, ]
 ```
+
+## Model I 
 
 Our first multinomial Logit model includes the following variables:
 
@@ -181,6 +192,7 @@ data2 <-list()
 #cols <- c("Alt", "Alt-Rock", "Anime", "Blues", "Blues-Jazz", "Class", "Country", "Elec", "Hip-Hop", "HH-Rap", "Jazz", "Jazz-Blues", "Rap", "Rap-HH", "Rock", "Rock-Alt")
 ```
 
+### Model I Performance 
 
 ```{r, results = 'markup'}
 # see how model1 does
@@ -239,6 +251,8 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 # data1 <- c(data1, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
 
+
+
 Now, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
@@ -261,6 +275,8 @@ Alternative and Rock, Blues and Jazz, and Hip Hop and Rap are similar to each ot
 * Predicting Blues (accept Jazz or Blues): `r (table[3,3] + table[3,8])/sum(table[3,])`
 * Predicting Hip Hop (accept Hip Hop or Rap): `r (table[7,7] + table[7,9])/sum(table[7,])`
 * Predicting Rap (accept Hip Hop or Rap): `r (table[9,9] + table[9,7])/sum(table[9,])`
+
+## Model II
 
 This next model includes the following variables (does not include `key` to try and simplify the model):
 
@@ -291,16 +307,9 @@ print("Wald Test P-Values: ")
 p
 ```
 
-Again, we look to see how the model performs. The confusion matrix is listed below, and the total accuracy is `r mean(as.character(test$predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. Still, accuracy for some genres (notably Alternative) could be improved, and we will look to create binomial logit models.
+### Model II Performance 
 
-In terms of genre characteristics, both multinomial models tell us that compared to Alternative music:
 
-* Hip Hop, Rap, and Rock are the most popular 
-* Country, Electronic, Hip Hop, Jazz, and Rap are the most danceable
-* Country and Anime songs are shorter
-* Electronic and Anime songs have higher energy
-* Electronic, Hip Hop, and Rap songs are not very happy 
-* Jazz, Blues, and Classical songs tend to be slower 
 
 
 ```{r, results = 'markup'}
@@ -361,6 +370,20 @@ data2 <- c(data2, table[10,10] /sum(table[10,]))
 # Rock or Alt? .66
 # data2 <- c(data2, (table[10,10] + table[10,1])/sum(table[10,]))
 ```
+
+Again, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(test$predicted_class2) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time, nearly the same as the previous model. Overall, all accuracy rates for all genres are roughly the same, and removing the dummy variable `key` has simplified the model without sacrificing accuracy. Still, accuracy for some genres (notably Alternative) could be improved, and we will look to create binomial logit models.
+
+In terms of genre characteristics (SMART Question 1), both multinomial models tell us that compared to Alternative music:
+
+* Hip Hop, Rap, and Rock are the most popular 
+* Country, Electronic, Hip Hop, Jazz, and Rap are the most danceable
+* Country and Anime songs are shorter
+* Electronic and Anime songs have higher energy
+* Electronic, Hip Hop, and Rap songs are not very happy 
+* Jazz, Blues, and Classical songs tend to be slower 
+
+
+## Individual Logit Models
 
 To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
 
