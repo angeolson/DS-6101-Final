@@ -23,6 +23,12 @@ library(nnet)
 
 # Section I: Intro 
 
+What defines a music genre? According to Franco Fabbri, it is "a set of musical events (real or possible) whose course is governed by a definite set of socially accepted rules." (Fabbri, 1982). These rules, however, can be difficult to pin down or put in so many words. Often, when people think of a music genre, they can hear it rather than describe it. The rule for determining the genre of a song may mirror the decision made in Jacobellis v. Ohio: "I know it when I hear it." Still, is it possible to determine characteristics of a genre more scientifically?
+
+Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below:
+
+* 
+
 ## Data Loading and Cleaning
 
 ```{r}
