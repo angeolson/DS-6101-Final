@@ -27,7 +27,16 @@ What defines a music genre? According to Franco Fabbri, it is "a set of musical 
 
 Spotify, a leading music streaming service, collects metadata on the songs on its platform. This data includes basic information on a song, such as the artist, album, date released, and genre, as well as more in depth audio features, described below:
 
-* 
+* **Acousticness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that a song is acoustic, with 1.0 representing high confidence.
+* **Danceability:** On a continuous scale of 0.0 to 1.0, how danceable a song is, where "danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity." 
+* **Energy:** On a continuous scale of 0.0 to 1.0, "a perceptual measure of intensity and activity." Spotify gives the example of death metal as high energy, and a Bach prelude as having low energy. this score is determined by "dynamic range, perceived loudness, timbre, onset rate, and general entropy."
+* **Instrumentalness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that a song contains no vocals. According to Spotify, Rap and spoken word are vocal, with any value above 0.5 a likely vocal track.
+* **Liveness:** On a continuous scale of 0.0 to 1.0, how confident Spotify is that there is an audience in a recording (i.e. that the song was recorded live and/or at a concert). According to Spotify, "a value above 0.8 provides strong likelihood that the track is live."
+* **Loudness:** On a continuous scale, this measures in decibels (dB) the loudness of a song averaged over its entire duration (Sptofy can provide different measurements for this feature for different parts of a song). According to Spotify, "loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude)." Values tend to exist between -60 and 0 db.
+* **Speechiness:** In contrast to 'instrumentalness,' a continuous scale of 0.0 to 1.0 this measure descriebd teh confidence that a given song (or track) is more "exclusively speech-like." As examples, Spotify notes that podcasts, audio books, or true spoken word tracks will score close to 1.0 (though anything over 0.66 likely falls in this category), an rap exists between 0.33 and 0.66 typically. Anything below 0.33 is what we would generally consider traditional music. 
+* **Valence:** On a continuous scale of 0.0 to 1.0, this measure decribes the musical positiveness/happiness of a track. A score clsoer to 1.0 suggests the song is very happy, where a score closer to 0.0 suggests that the song is sad or angry. 
+
+Spotify collects other useful data elements as well, including tempo (beats per measure), key (A, A#, B, etc.), 
 
 ## Data Loading and Cleaning
 
