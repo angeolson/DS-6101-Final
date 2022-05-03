@@ -253,7 +253,7 @@ data1 <- c(data1, table[10,10] /sum(table[10,]))
 
 
 
-Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
+Now, we look to see how the model performs. The confusion matrix is listed above, and the total accuracy is `r mean(as.character(predicted_class) == as.character(test$music_genre))`. So, on average across all genres, the model predicts the correct genre roughly 68% of the time. The most challenging genres to predict (SMART Question III) were Alternative (accuracy: `r c(table[1,1]/sum(table[1,]))`) and Rap (accuracy: `r (table[9,9] /sum(table[9,]))`. However, these genres are similar to Rock and Hip-Hop respectively. If we include those genres as "correct," accuracy jumps for Alternative to `r (table[1,1] + table[1,10])/sum(table[1,])` and Rap to `r `(table[9,9] + table[9,7])/sum(table[9,])`. 
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
