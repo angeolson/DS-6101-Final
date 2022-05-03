@@ -257,9 +257,18 @@ Now, we look to see how the model performs. The confusion matrix is listed above
 
 If we predicted genres at random, we could expect to be right 10% of time time, so this accuracy rate is an improvement over a null model. Next, we look to see if we can simplify the model without sacrificing accuracy. 
 
-Based on the confusion matrix, we can see which genres are most similar to each other based on this model. For example, when a country song is not being predicted as country (the prediction with the highest frequency), the second most-likely prediction is Alternative. 
+Based on the confusion matrix, we can see which genres are most similar to each other based on this model (SMART Question 2). For example, when a country song is not being predicted as country (the prediction with the highest frequency), the second most-likely prediction is Alternative. 
 
-
+* **Alternative:** Rock
+* **Anime:** Blues
+* **Blues:** Anime, Jazz, Country
+* **Classical:** Anime, Jazz
+* **Country:** Alternative, Rock
+* **Electronic:** Jazz
+* **Hip Hop:** Rap
+* **Jazz:** Electronic, Blues
+* **Rap:** Hip Hop
+* **Rock:** Alterantive, Country
 
 
 Accuracy rates for each genre are listed below:
@@ -389,7 +398,7 @@ In terms of genre characteristics (SMART Question 1), both multinomial models te
 
 To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
 
-Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres. Not that 'strongest predictors' are determined by the magnitude of the coeffiicent of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
+Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres (SMART Question 1). Note that 'strongest predictors' are determined by the magnitude of the coefficient of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
 
 * **Alternative:** more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
 * **Anime:** more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
@@ -399,7 +408,7 @@ Each model also tells us a bit more about each genre as compared to the average 
 * **Electronic:** *Strongest Predictors/Characteristics*: Very danceable, very instrumental, very energetic, not happy.
 * **Hip Hop:** More popular, more likley to be in a minor key. *Strongest Predictors*: Very danceable, not instrumental, very speechy, not happy.
 * **Jazz:** Similar to the Blues, more likely to contain a wider variety of keys (including those less common to other genres) and also more likely to be in a minor key. *Strongest Predictors*: danceable, not energetic, instrumental, not speechy, happy.
-* **Rap:** More popular, energetic. *Strongest Predictors*: danceable, not instrumental, speecy, not happy.
+* **Rap:** More popular, energetic. *Strongest Predictors*: danceable, not instrumental, speechy, not happy.
 * **Rock:** More popular, less likley to be in minor keys. *Strongest Predictors*: not danceable, energetic, happy.  
 
 
