@@ -712,6 +712,10 @@ cm_rap
 The accuracy of the rap decision tree model is `r cm_rap$overall['Accuracy']`
 
 
+## Decision Tree Findings
+Among the all the decision trees, hip-hop has the best accuracy and alternative has the worst accuracy. The hip-hop confusion matrix shows that the model incorrectly predicted 690 times as Hip-Hop and incorrectly predicted 215 times as not hip-hop. The alternative confusion matrix shows that the model incorrectly predicted 1097 times as alternative and incorrectly predicted 616 time as not alternative. Although all of the variables were in included in the decision tree formula, the algorithm only used the most important ones. So, the most important variables for the hip-hop decision tree are acousticness, danceability, energy, popularity, and speechiness 
+
+
 # Section VI: KNN
 ## Alterative 
 ```{r,results = 'markup'}
@@ -745,7 +749,6 @@ The accuracy of the blues knn model is `r cm_knn_blue$overall['Accuracy']`
 knn_jazz=knn(train = training_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness","tempo", "valence")], test = testing_jazz[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "tempo","valence")], cl=training_jazz[,"new_genres_jazz"], k=100)
 cm_knn_jazz = confusionMatrix(knn_jazz, reference = testing_jazz[,"new_genres_jazz"] )
 cm_knn_jazz
-table(knn_jazz)
 ```
 The accuracy of the jazz knn model is `r cm_knn_jazz$overall['Accuracy']`
 
