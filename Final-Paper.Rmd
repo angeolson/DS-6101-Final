@@ -726,7 +726,7 @@ The accuracy of the alternative knn model is `r cm_knn_alt$overall['Accuracy']`
 ```{r, results = 'markup'}
 #knn for rock
 knn_rock=knn(train = training_rock[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], test = testing_rock[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], cl=training_rock[,"new_genres_rock"], k=100)
-cm_knn_rock = confusionMatrix(knn_rock, reference = testing_rock[,"new_genres_alt"] )
+cm_knn_rock = confusionMatrix(knn_rock, reference = testing_rock[,"new_genres_rock"] )
 cm_knn_rock
 ```
 The accuracy of the rock knn model is `r cm_knn_rock$overall['Accuracy']`
@@ -736,7 +736,6 @@ The accuracy of the rock knn model is `r cm_knn_rock$overall['Accuracy']`
 knn_blue=knn(train = training_blue[,c("popularity", "danceability", "energy", "instrumentalness","liveness", "speechiness","tempo", "valence")], test = testing_blue[,c("popularity", "danceability", "energy", "instrumentalness", "liveness", "speechiness", "tempo","valence")], cl=training_blue[,"new_genres_blue"], k=100)
 cm_knn_blue = confusionMatrix(knn_blue, reference = testing_blue[,"new_genres_blue"] )
 cm_knn_blue
-table(knn_blue)
 ```
 The accuracy of the blues knn model is `r cm_knn_blue$overall['Accuracy']`
 
