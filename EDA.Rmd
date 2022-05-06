@@ -2,16 +2,10 @@
 title: "Exploratory Data Analysis"
 author: "Meghana, Kowshik"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    code_folding: hide
-    number_sections: false
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '3'
+output:  
+   rmdformats::readthedown:
+     highlight: kate
+     code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -32,9 +26,9 @@ colnames(music)
 
 ```{r, results='markup'}
 str(music)
-xkablesummary(music)
 ```
-
+# Changing vectors
+Declaring key, mode, music_genre, tempo as categorical variables
 ```{r}
 # changing vectors
 music$key <- factor(music$key)
@@ -43,7 +37,8 @@ music$music_genre <- factor(music$music_genre)
 music$tempo <- as.numeric(music$tempo)
 ```
 
-```{r}
+# checking and removing null values
+```{r, results='hold'}
 # checking and removing null values
 paste0("Before removing missing values:", nrow(music))
 print(colSums(is.na(music)))
@@ -51,29 +46,38 @@ music = na.omit(music)
 paste0("After removing missing values:", nrow(music))
 ```
 
-```{r}
+# Numerical features
+```{r, results='markup'}
 #seperating numeric values
 numcolumns <- unlist(lapply(music,is.numeric))
 music_cor <- music[,numcolumns]
 music_cor <- music_cor[,-c(1)]
-head(music_cor, 5)
+
+xkablesummary(music_cor)
 ```
 
-```{r}
 # Correlations
+```{r, results='markup'}
 loadPkg("corrplot")
 corrplot(cor(music_cor, method = "spearman"), method = "circle", type = 'lower', order = 'hclust', tl.col = 'black',
          cl.ratio = 0.1, tl.srt = 45, col = COL2('PuOr', 20))
-
 ```
 
-# To see categories in the music_genre
-```{r, results='markup'}
-unique(music$music_genre)
+# Plots
+## Histograms
+```{r, results='hold'}
+# Histograms for all numeric columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
+{  
+hist(music_cor[, i], breaks = 20, main = names(music_cor[i]), col = COL2('PuOr', 20), xlab = "")
+}
 ```
 
-```{r}
-par(mfrow=c(2,2))
+## qqplots
+```{r, results='hold'}
+#qqplots for all numeric columns
+par(mfrow=c(2,3))
 for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
 {  
 qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
@@ -81,82 +85,105 @@ qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
 }
 ```
 
-```{r}
-# Histograms for all numeric columns
-par(mfrow=c(3,3))
-for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
-{  
-hist(music_cor[, i], breaks = 20, main = names(music_cor[i]), col = COL2('PuOr', 20), xlab = "")
-}
-```
-
-```{r}
+## boxplots
+```{r, results='hold'}
 # boxplot for all numeric columns
-par(mfrow=c(2,2))
+par(mfrow=c(2,3))
 for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
 {  
-boxplot(music_cor[, i], breaks = 20, main = names(music_cor[i]), col = "purple4", xlab = "")
+boxplot(music_cor[, i],  main = names(music_cor[i]), col = "purple4", xlab = "")
 }
+
 ```
 
-```{r}
+# Removing outliers
+
+```{r, results='hide'}
+music2 <- data.frame(music)
+
+# changing vectors
+music2$key <- factor(music2$key)
+music2$mode <- factor(music2$mode)
+music2$music_genre <- factor(music2$music_genre)
+music2$tempo <- as.numeric(music2$tempo)
+
+# Removing outliers
+music2 = outlierKD2(music2, popularity, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, danceability, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, loudness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, liveness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, duration_ms, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, speechiness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, tempo, rm = TRUE, histogram = FALSE)
+
+# Seperating numeric values
+numcolumns2 <- unlist(lapply(music2,is.numeric))
+music_cor2 <- music2[,numcolumns2]
+music_cor2 <- music_cor2[,-c(1)]
+```
+
+```{r, results='hold'}
+print("16210 out of 45020 rows were effected")
+xkabledply(head(music2), title = "Dataframe without outliers")
+
+```
+# Plots after removing outliers
+
+## Histogram
+```{r, results='markup'}
+# Histograms for all numeric columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor2[,1: ncol(music_cor2)]))
+{  
+hist(music_cor2[, i], breaks = 20, main = names(music_cor2[i]), col = COL2('PuOr', 20), xlab = "")
+}
+
+```
+
+## qqplot
+```{r, results='markup'}
+# qqplots for all numerical columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor2[,1: ncol(music_cor2)]))
+{  
+qqnorm(music_cor2[, i], main = names(music_cor2[i]), pch = 18, col = "purple4")
+   qqline(music_cor2[, i], col = "red")
+}
+
+```
+
+## Boxplot
+```{r, results='markup'}
+# boxplots for all numeric columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor2[,1: ncol(music_cor2)]))
+{  
+boxplot(music_cor2[, i], main = names(music_cor2[i]), col = "purple4", xlab = "")
+}
+
+```
+
+# Understanding each genre
+
+## Genres
+```{r, results='markup'}
+unique(music$music_genre)
+```
+
+## Count
+```{r, results='markup'}
 # Genre frequency
 music$music_genre <- factor(music$music_genre)
 genre_count <- table(music$music_genre)
+genre_count
 b <- barplot(genre_count, cex.names=0.7, col = COL2('PuOr', 10), ylim = c(0,5000), xlab = "Genre", ylab = "Count")
 text(b, genre_count/2, genre_count, font = 2, col = "dark gray") 
 ```
 
-# Removing outliers
-music_clean <- data.frame(music)
-music_clean = outlierKD2(music, popularity, rm = TRUE) #, histogram = FALSE)
-music_clean = outlierKD2(music, danceability, rm = TRUE) #, histogram = FALSE)
-music_clean = outlierKD2(music, loudness, rm = TRUE)#, histogram = FALSE)
-music_clean = outlierKD2(music, liveness, rm = TRUE)#, histogram = FALSE)
-music_clean = outlierKD2(music, duration_ms, rm = TRUE)#, histogram = FALSE)
-music_clean = outlierKD2(music, speechiness, rm = TRUE)#, histogram = FALSE)
-music_clean = outlierKD2(music, tempo, rm = TRUE)#, histogram = FALSE)
-
-
-# Trying to remove outliers
-outliers <- function(x) {
-
-  Q1 <- quantile(x, probs=.20)
-  Q3 <- quantile(x, probs=.80)
-  iqr = Q3-Q1
-
- upper_limit = Q3 + (iqr*1.5)
- lower_limit = Q1 - (iqr*1.5)
-
- x > upper_limit | x < lower_limit
-}
-
-remove_outliers <- function(df, cols = names(df)) {
-  for (col in cols) {
-    df <- df[!outliers(df[[col]]),]
-  }
-  df
-}
-
-# outliers
-music_clean <- data.frame(music)
-remove_outliers(music_clean, c('popularity', 'danceability', 'loudness', 'liveness', 'duration_ms', 'speechiness', 'tempo'))
-nrow(music_clean)
-
-
-# seperating data
-music_clean$key <- factor(music_clean$key)
-music_clean$mode <- factor(music_clean$mode)
-music_clean$music_genre <- factor(music_clean$music_genre)
-music_clean$tempo <- as.numeric(music_clean$tempo)
-numcolumns2 <- unlist(lapply(music_clean,is.numeric))
-music_cor2 <- music_clean[,numcolumns]
-music_cor2 <- music_cor2[,-c(1)]
-head(music_cor2, 5)
-
-```{r}
+## Average of each feature
+```{r, results='markup'}
 library(dplyr)
-genrex = music %>% group_by(music_genre)  %>%
+genres = music %>% group_by(music_genre)  %>%
                     summarise(popularity = mean(popularity),
                               acousticness = mean(acousticness),
                               danceability = mean(danceability),
@@ -167,129 +194,156 @@ genrex = music %>% group_by(music_genre)  %>%
                               loudness = mean(loudness),
                               speechiness = mean(speechiness),
                               tempo = mean(tempo),
-                              tempo = mean(tempo),
-                              .groups = 'drop')
+                              valence = mean(valence))
  
-View(genrex)
+xkabledply(genres, title = "Averages for each genre")
 ```
 
-```{r}
-library(ggplot2)
-library(ggpubr)
-ggplot(genrex, aes(x = music_genre, y = popularity)) + geom_bar()
+## Distribution of each feature
+```{r, results='hold'}
+library(patchwork)
+d1 <- ggplot(music, aes(x = popularity, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='Popularity', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d2 <- ggplot(music, aes(x = acousticness, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='acousticness', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d3 <- ggplot(music, aes(x = danceability, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='danceability', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d4 <- ggplot(music, aes(x = duration_ms, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='duration_ms', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d5 <- ggplot(music, aes(x = energy, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='energy', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d6 <- ggplot(music, aes(x = instrumentalness, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='instrumentalness', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d7 <- ggplot(music, aes(x = liveness, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='liveness', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d8 <- ggplot(music, aes(x = loudness, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='loudness', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d9 <- ggplot(music, aes(x = speechiness, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='speechiness', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d10 <- ggplot(music, aes(x = tempo, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='tempo', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d11 <- ggplot(music, aes(x = valence, col = music_genre)) +    
+  geom_density(size = 1) +
+  labs(title='valence', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position= "none") +
+  scale_color_brewer(palette = "PuOr")
+
+d1 + d2 + d3 + d4 + d5 + d6
+d7 + d8 + d9 + d10 + d11
 
 ```
 
-```{r, results='markup'}
-#boxplot(genrex[,1:3])
-ggplot(genrex, aes(music_genre, popularity, fill = music_genre)) +    
+## Average of features for each genre
+```{r, results='hold'}
+#install.packages("patchwork")
+library(patchwork)
+p1 <- ggplot(genres, aes(music_genre, popularity, fill = music_genre)) +    
   geom_bar(stat = "identity") +
-  labs(title='Popularity of each music_genre')
+  labs(title='Average popularity', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, acousticness, fill = music_genre)) +    
+p2 <- ggplot(genres, aes(music_genre, acousticness, fill = music_genre)) +    
   geom_bar(stat = "identity") +
-   labs(title='Acoustiness of each music_genre')
+   labs(title='Average acoustiness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, danceability, fill = music_genre)) +     
+p3 <- ggplot(genres, aes(music_genre, danceability, fill = music_genre)) +     
   geom_bar(stat = "identity") +
-   labs(title='Danceability of each music_genre')
+   labs(title='Average danceability', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, duration_ms, fill = music_genre)) +     
+p4 <- ggplot(genres, aes(music_genre, duration_ms, fill = music_genre)) +     
   geom_bar(stat = "identity") +
-   labs(title='Duration (ms) of each music_genre')
+   labs(title='Average duration', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, energy, fill = music_genre)) +     
+p5 <- ggplot(genres, aes(music_genre, energy, fill = music_genre)) +     
   geom_bar(stat = "identity") +
-   labs(title='Energy of each music_genre')
+   labs(title='Average energy', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, instrumentalness, fill = music_genre)) +     
+p6 <- ggplot(genres, aes(music_genre, instrumentalness, fill = music_genre)) +     
   geom_bar(stat = "identity") +
-   labs(title='Instrumentalness of each music_genre')
+   labs(title='Average instrumentalness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, liveness, fill = music_genre)) +     
+p7 <- ggplot(genres, aes(music_genre, liveness, fill = music_genre)) +     
   geom_bar(stat = "identity") +
-   labs(title='Liveness of each music_genre')
+   labs(title='Average liveness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-ggplot(genrex, aes(music_genre, loudness, fill = music_genre)) +     
+p8 <- ggplot(genres, aes(music_genre, loudness, fill = music_genre)) +     
   geom_bar(stat = "identity") +  scale_y_reverse() +
-   labs(title='Loudness of each music_genre')
-```
+   labs(title='Average loudness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-```{r, results='markup'}
-ggplot(genrex, aes(x = music_genre, y = 100, fill = blues9)) + 
-  geom_bar(stat = "identity")
-```
+p9 <- ggplot(genres, aes(music_genre, speechiness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average speechiness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-```{r, results='markup'}
-# Scatterplot to see energy of the song by genre wise
-library(ggplot2)
-library(ggpubr)
-ggplot(music, aes(x=c(music_genre), y=energy)) + 
-  ggtitle("Energy vs Music_Genre") + 
-   xlab("Energy") + ylab("Music_Genre") + 
-    geom_point(size = 1, shape = 18, color = "blue") + 
-     theme_bw()
-```
+p10 <- ggplot(genres, aes(music_genre, tempo, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average tempo', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
-
-# Barplot to see energy of each music_genre
-```{r, results='markup'}
-library(ggplot2)
-ggplot(data=music, aes(x=music_genre, y=energy)) +  
-  geom_col(fill = "#00AFBB") + 
-   labs(title='Energy of each music_genre', x="music_genre", y = "energy") + 
-    theme(plot.title = element_text(hjust = 0.5))
-```
-
-# Barplot to see popularity of each Music Genre by energy wise
-```{r, results='markup'}
-library(ggplot2)
-ggplot(data=music, aes(x=music_genre, y=popularity)) +  
-  geom_col(fill = "#00AFBB") + 
-   labs(title='Energy of each music_genre', x="music_genre", y = "popularity") +             theme(plot.title = element_text(hjust = 0.5))
-```
+p11 <- ggplot(genres, aes(music_genre, valence, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average valence', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
 
 
-```{r}
-par(mfrow = c(3, 3))
-hist(music_cor$duration_ms, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Duration", xlab = "Duration")
-hist(music_cor$acousticness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Acoustiness", xlab = "Acoustiness")
-hist(music_cor$instrumentalness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Instrumentalness", xlab = "Instrumentalness")
-hist(music_cor$danceability, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Danceability", xlab = "Danceability")
-hist(music_cor$valence, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Valence", xlab = "Valence")
-hist(music_cor$popularity, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Popularity", xlab = "Popularity")
-hist(music_cor$speechiness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Speechiness", xlab = "Speechiness")
-hist(music_cor$liveness, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Liveness", xlab = "Liveness")
-hist(music_cor$tempo, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Tempo", xlab = "Tempo")
-hist(music_cor$energy, breaks = 20, col = COL2('PuOr', 20), main = "Histogram for Energy", xlab = "Energy")
-hist(music_cor$loudness, breaks = 20, col = COL2('PuOr', 24), main = "Histogram for Loudness", xlab = "Loudness")
-```
-
-```{r}
-par(mfrow=c(2,2))
-for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
-{  
-qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
-   qqline(music_cor[, i], col = "red")
-}
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-# Genre frequency
-genre_count <- table(music$music_genre)
-b <- barplot(genre_count, cex.names=0.7, col = COL2('PuOr', 10), ylim = c(0,5000), xlab = "Genre", ylab = "Count")
-text(b, genre_count/2, genre_count, font = 2, col = "dark gray") 
-```
-
-```{r}
-
-
-```
+p1 + p2 + p3 + p4 + p5 + p6 
+p7 + p8 + p9 + p10 + p11
 ```
