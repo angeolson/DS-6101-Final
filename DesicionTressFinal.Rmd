@@ -154,10 +154,10 @@ cm_rock
 
 ```{r, results = 'markup'}
 #knn for rock
-knn_alt=knn(train = training_alt[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], test = testing_alt[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], cl=training_alt[,"new_genres_alt"], k=100)
-cm_knn_alt = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
-cm_knn_alt
-table(knn_alt)
+knn_rock=knn(train = training_alt[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], test = testing_rock[,c("popularity", "danceability", "energy", "instrumentalness", "speechiness", "valence")], cl=training_alt[,"new_genres_alt"], k=100)
+cm_knn_rock = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
+cm_knn_rock
+table(knn_rock)
 ```
 
 
