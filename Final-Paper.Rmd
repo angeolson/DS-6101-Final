@@ -519,6 +519,7 @@ predict(Model_Class, test[ test$instance_id == '38780', ], type = 'response')
 However, when using a model calibrated to predict classical or not, "La Donna è Mobile," is predicted to be classical--but barely, at a probability of `r predict (Model_Class, test[ test$instance_id == '38780', ], type = 'response')`. 
 
 # Section V: Decision Trees
+Since a few genres were not successfully predicted by the logit models, decision tree modeling was employed in efforts to improve these predictions. Listed below are decision trees for alternative, rock, blues, jazz, hip-hop and rap.
 ```{r}
 library(partykit)
 library(rpart)
@@ -712,11 +713,14 @@ cm_rap
 The accuracy of the rap decision tree model is `r cm_rap$overall['Accuracy']`
 
 
-## Decision Tree Findings
-Among the all the decision trees, hip-hop has the best accuracy and alternative has the worst accuracy. The hip-hop confusion matrix shows that the model incorrectly predicted 690 times as Hip-Hop and incorrectly predicted 215 times as not hip-hop. The alternative confusion matrix shows that the model incorrectly predicted 1097 times as alternative and incorrectly predicted 616 time as not alternative. Although all of the variables were in included in the decision tree formula, the algorithm only used the most important ones. So, the most important variables for the hip-hop decision tree are acousticness, danceability, energy, popularity, and speechiness 
+## Decision Tree Model Findings
+Among the all the decision trees, hip-hop has the best accuracy and alternative has the worst accuracy. The hip-hop confusion matrix shows that the model incorrectly predicted 690 times as Hip-Hop and incorrectly predicted 215 times as not hip-hop. The alternative confusion matrix shows that the model incorrectly predicted 1097 times as alternative and incorrectly predicted 616 time as not alternative. Although all of the variables were in included in the decision tree formula, the algorithm only used the most important ones. So, the most important variables for the hip-hop decision tree are acousticness, danceability, energy, popularity, and speechiness.
 
 
 # Section VI: KNN
+Knn models were also used to see if they can better predict the six genres that had under performing logit models. The Knn models were developed using the variables that were found as most significant in the logit models. 
+
+
 ## Alterative 
 ```{r,results = 'markup'}
 knn_alt=knn(train = training_alt[,c("energy", "danceability","instrumentalness", "speechiness")], test = testing_alt[,c("energy", "danceability","instrumentalness", "speechiness")], cl=training_alt[,"new_genres_alt"], k=100)
@@ -770,6 +774,8 @@ cm_knn_rap
 ```
 The accuracy of the rap knn model is `r cm_knn_rap$overall['Accuracy']`
 
+## KNN Model Findings
+Overall, all the knn models had lower accuracy score than the decision tree models. The rap model has the best accuracy and alternative has the worst accuracy. The rap confusion matrix shows that the model incorrectly predicted 65 times as the rap genre and incorrectly predicted 487 times as not rap. The alternative confusion matrix shows that the model incorrectly predicted 520 time as alternative and 509 times as not alternative. 
 
 
 # Section VII: Conclusion
