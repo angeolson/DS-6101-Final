@@ -163,7 +163,6 @@ boxplot(music_cor2[, i], main = names(music_cor2[i]), col = "purple4", xlab = ""
 
 ```
 
-# Understanding each genre
 
 ## Genres
 ```{r, results='markup'}
@@ -175,7 +174,6 @@ unique(music$music_genre)
 # Genre frequency
 music$music_genre <- factor(music$music_genre)
 genre_count <- table(music$music_genre)
-genre_count
 b <- barplot(genre_count, cex.names=0.7, col = COL2('PuOr', 10), ylim = c(0,5000), xlab = "Genre", ylab = "Count")
 text(b, genre_count/2, genre_count, font = 2, col = "dark gray") 
 ```
