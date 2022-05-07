@@ -522,9 +522,9 @@ In terms of genre characteristics (SMART Question 1), both multinomial models te
 
 ## Individual Logit Models
 
-To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. The Logit regression model summaries for each genre are presented below. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
+To prep the data for individual models, we create subsets of the data that are balanced with an even mix of the genre in question we are looking to predict and a random sampling of all other genres. Overall, we see most variables are statistically significant at the $\alpha$ = 0.05 level. 
 
-Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres (SMART Question 1). Note that 'strongest predictors' are determined by the magnitude of the coefficient of the variable. Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
+Each model also tells us a bit more about each genre as compared to the average characteristics of all other genres (SMART Question 1). Note that 'strongest predictors' are determined by the magnitude of the coefficient of the variable (magnitude .1 or greater). Because our variables of comparison are measured on relatively equal scales (0 to 1, continuous), we consider these apt comparisons. 
 
 * **Alternative:** more popular, energetic, and likely to be in a minor key. *Strongest Predictors*: high energy, not danceable, not instrumental, not speechy
 * **Anime:** more energetic and faster. *Strongest Predictors*: not danceable, energetic, not live, not speechy
@@ -538,7 +538,7 @@ Each model also tells us a bit more about each genre as compared to the average 
 * **Rock:** More popular, less likley to be in minor keys. *Strongest Predictors*: not danceable, energetic, happy.  
 
 
-```{r, results = 'markup'}
+```{r}
 # Logit models by genre
 
 # make list of genres 
