@@ -126,6 +126,7 @@ qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
 ```
 Further, we observe clear presence of outliers in the `duration_ms` column and `popularity`, `loudness`, `liveness`, `speechiness`, `tempo` and `instrumentalness` are showing abnormal distribution.
 
+
 ## Removing outliers
 ```{r, results='hide'}
 music2 <- data.frame(music)
@@ -252,7 +253,6 @@ library(tidyverse)
 anova_results <- purrr::map(musicNum[,1:11], ~summary(aov(.x ~ musicNum$music_genre)))
 anova_results
 ```
-
 
 # Section IV: Logit Modeling
 
