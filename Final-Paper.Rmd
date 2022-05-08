@@ -17,8 +17,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 library(ezids)
-install.packages("nnet")
-install.packages("partykit")
+#install.packages("nnet")
+# install.packages("partykit")
 library(nnet)
 ```
 
@@ -225,9 +225,11 @@ xkabledply(genres, title = "Averages for each genre")
 We made a table with music genres as the rows, features as the columns displaying the average values of each characteristic in each music genre. `popularity` for Rap music tops the list with an average of 60.54 and Anime is at the bottom with an average of 24.79. Coming to `acousticness` feature, Classical music tops the list with average = 0.87 and Rap is at the last position with average of 0.16. `danceability`, Hip-Hop music has higher average at 0.713 and Classical has the least at an average of 0.306. `duration_ms`, Classical genre tops the list with an average of 278ms and Country is at last position with average of 195ms. When it comes to `energy`, the Electronic genre places first with an average of 0.73, while Classical places last with an average of 0.17. For `instrumentalness`, Classical music has the highest average at 0.60, which makes sense as we all know many instruments are used in the making of classical music, while hip-hop has the lowest average of 0.01. The Blues genre ranks first for `liveness` with an average of 0.23, contradictory to Classical which has an average of 0.16. In terms of the `loudness` feature, the Alternative genre ranks first with an average of -6.54, while Classical ranks bottom with an average of -21.60. For `speechiness` Hip-Hop genre has the highest average at 0.20, which was surprising as we expected Rap music to be on the top. `tempo` has it's highest average of 126 in Anime genre and lowest in the Classical at 104. Finally, `valence` has highest average of 0.57 for the Blues genre and Lowest average of 0.21 for Classical genre. 
 
 To answer our first SMART question, we can look at the bar plots below to understand how each feature changes with genre
+
 ```{r, results='hold'}
 #install.packages("patchwork")
 library(patchwork)
+library(ggplot2)
 p1 <- ggplot(genres, aes(music_genre, popularity, fill = music_genre)) +    
   geom_bar(stat = "identity") +
   labs(title='Average popularity', x = "Genre") +
@@ -800,7 +802,7 @@ new_genres_rap<-ifelse (music$music_genre=="Rap", "rap","nrap")
 music$new_genres_rap<-new_genres_rap
 music$new_genres_rap = factor(music$new_genres_rap)
 ```
-## Alterative 
+## Alternative 
 
 ```{r balancing data}
 #train/test for alternate 
@@ -943,7 +945,7 @@ Among the all the decision trees, hip-hop has the best accuracy and alternative 
 Knn models were also used to see if they can better predict the six genres that had under performing logit models. The Knn models were developed using the variables that were found as most significant in the logit models. 
 
 
-## Alterative 
+## Alternative 
 ```{r,results = 'markup'}
 knn_alt=knn(train = training_alt[,c("energy", "danceability","instrumentalness", "speechiness")], test = testing_alt[,c("energy", "danceability","instrumentalness", "speechiness")], cl=training_alt[,"new_genres_alt"], k=100)
 cm_knn_alt = confusionMatrix(knn_alt, reference = testing_alt[,"new_genres_alt"] )
