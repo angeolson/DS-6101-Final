@@ -58,7 +58,28 @@ Lastly, question three can be answered through a combination of all of our model
 
 # Section III: EDA
 
+## Data Loading
 
+```{r,results='markup'}
+music = data.frame(read.csv("music_genre.csv"))
+head(music)
+```
+
+Our initial data set has 50005 observations with 18 features. However, for this research we will not be including `instance_id`, `artist_name`, `track_name`, and `obtained date`. Before making any adjustments, our data set is described below, 
+
+```{r, results='markup'}
+str(music)
+```
+
+```{r}
+# changing vectors
+music$key <- factor(music$key)
+music$mode <- factor(music$mode)
+music$music_genre <- factor(music$music_genre)
+music$tempo <- as.numeric(music$tempo)
+```
+
+We changed `key`, `mode`, and `music_genre` from character variable to factorial variable. We also changed `tempo` from character variable to numeric variable. After changing vectors, below is the summary of our data set. 
 # Section IV: Logit Modeling
 
 We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
