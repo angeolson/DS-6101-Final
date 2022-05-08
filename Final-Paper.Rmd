@@ -203,6 +203,39 @@ g
 
 All keys (major and minor) are represented in the dataset, and the distribution of songs in each key across all genres does appear to be statistically significantly different at  the $\alpha$ = 0.05 level.
 
+```{r, results='markup'}
+library(dplyr)
+genres = music %>% group_by(music_genre)  %>%
+                    summarise(popularity = mean(popularity),
+                              acousticness = mean(acousticness),
+                              danceability = mean(danceability),
+                              duration_ms = mean(duration_ms),
+                              energy = mean(energy),
+                              instrumentalness = mean(instrumentalness),
+                              liveness = mean(liveness),
+                              loudness = mean(loudness),
+                              speechiness = mean(speechiness),
+                              tempo = mean(tempo),
+                              valence = mean(valence))
+ 
+xkabledply(genres, title = "Averages for each genre")
+```
+
+We can make a table out of the above section, with music genres as rows and features as columns, showing the average values of each characteristic in each music genre described below:
+For popularity feature Rap genre tops the list with an average of 60.54 and Anime at last position with average = 24.79.
+Coming to acousticness feature Classical genre tops the list with average = 0.87 and Rap is at last position with average of 0.16.
+Same like for danceability Hip-Hop genre has more average of 0.713 and Classical being the least one with an average of00.306 .
+For popularity duration_ms Classical genre tops the list with an average of 278ms and Country at last position with average = 195ms.
+When it comes to energy, The Electronic genre places first with an average of 0.73, while Classical places last with an average of 0.17.
+The same goes for instrumentality. Classical music has a higher average of 0.60, while hip-hop has the lowest average of 0.01.
+The Blues genre ranks first for liveness duration ms with an average of 0.23, followed by Classical with an average of 0.16.
+In terms of the loudenss feature, The Alternative genre ranks first with a score of -6.54, while Classical ranks bottom with a score of -21.60.
+Same like for speechiness Hip-Hop genre has more average of 0.20 and Country being the least one with average = 0.04.
+Last but one tempo feature is high with average of 126 in Anime genre and low in Classical being the lowest one with value = 104.
+And our last feature valence has highest average of 0.57 for Blues genre and Lowest average of 0.21 for Classical genre
+
+
+
 ```{r, results = 'markup'}
 Cont_Table <- table(music$music_genre, music$key)
 xkabledply(Cont_Table, title="Contingency Table for Genre and Key")
