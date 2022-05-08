@@ -221,18 +221,82 @@ genres = music %>% group_by(music_genre)  %>%
 xkabledply(genres, title = "Averages for each genre")
 ```
 
-We can make a table out of the above section, with music genres as rows and features as columns, showing the average values of each characteristic in each music genre described below:
-For popularity feature Rap genre tops the list with an average of 60.54 and Anime at last position with average = 24.79.
-Coming to acousticness feature Classical genre tops the list with average = 0.87 and Rap is at last position with average of 0.16.
-Same like for danceability Hip-Hop genre has more average of 0.713 and Classical being the least one with an average of00.306 .
-For popularity duration_ms Classical genre tops the list with an average of 278ms and Country at last position with average = 195ms.
-When it comes to energy, The Electronic genre places first with an average of 0.73, while Classical places last with an average of 0.17.
-The same goes for instrumentalness. Classical music has a higher average of 0.60 which we all know classical will be having many instruments, while hip-hop has the lowest average of 0.01.
-The Blues genre ranks first for liveness duration ms with an average of 0.23, followed by Classical with an average of 0.16.
-In terms of the loudenss feature, The Alternative genre ranks first with a score of -6.54, while Classical ranks bottom with a score of -21.60.
-Same like for speechiness Hip-Hop genre has more average of 0.20 and Country being the least one with average = 0.04.
-Last but one tempo feature is high with average of 126 in Anime genre and low in Classical being the lowest one with value = 104.
-And our last feature valence has highest average of 0.57 for Blues genre and Lowest average of 0.21 for Classical genre
+We made a table with music genres as the rows, features as the columns displaying the average values of each characteristic in each music genre. `popularity` for Rap music tops the list with an average of 60.54 and Anime is at the bottom with an average of 24.79. Coming to `acousticness` feature, Classical music tops the list with average = 0.87 and Rap is at the last position with average of 0.16. `danceability`, Hip-Hop music has higher average at 0.713 and Classical has the least at an average of 0.306. `duration_ms`, Classical genre tops the list with an average of 278ms and Country is at last position with average of 195ms. When it comes to `energy`, the Electronic genre places first with an average of 0.73, while Classical places last with an average of 0.17. For `instrumentalness`, Classical music has the highest average at 0.60, which makes sense as we all know many instruments are used in the making of classical music, while hip-hop has the lowest average of 0.01. The Blues genre ranks first for `liveness` with an average of 0.23, contradictory to Classical which has an average of 0.16. In terms of the `loudness` feature, the Alternative genre ranks first with an average of -6.54, while Classical ranks bottom with an average of -21.60. For `speechiness` Hip-Hop genre has the highest average at 0.20, which was surprising as we expected Rap music to be on the top. `tempo` has it's highest average of 126 in Anime genre and lowest in the Classical at 104. Finally, `valence` has highest average of 0.57 for the Blues genre and Lowest average of 0.21 for Classical genre. 
+
+To answer our first SMART question, we can look at the bar plots below to understand how each feature changes with genre
+```{r, results='hold'}
+#install.packages("patchwork")
+library(patchwork)
+p1 <- ggplot(genres, aes(music_genre, popularity, fill = music_genre)) +    
+  geom_bar(stat = "identity") +
+  labs(title='Average popularity', x = "Genre") +
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p2 <- ggplot(genres, aes(music_genre, acousticness, fill = music_genre)) +    
+  geom_bar(stat = "identity") +
+   labs(title='Average acoustiness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p3 <- ggplot(genres, aes(music_genre, danceability, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average danceability', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p4 <- ggplot(genres, aes(music_genre, duration_ms, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average duration', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p5 <- ggplot(genres, aes(music_genre, energy, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average energy', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p6 <- ggplot(genres, aes(music_genre, instrumentalness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average instrumentalness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p7 <- ggplot(genres, aes(music_genre, liveness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average liveness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p8 <- ggplot(genres, aes(music_genre, loudness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +  scale_y_reverse() +
+   labs(title='Average loudness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p9 <- ggplot(genres, aes(music_genre, speechiness, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average speechiness', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p10 <- ggplot(genres, aes(music_genre, tempo, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average tempo', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+p11 <- ggplot(genres, aes(music_genre, valence, fill = music_genre)) +     
+  geom_bar(stat = "identity") +
+   labs(title='Average valence', x = "Genre")+
+  theme(axis.text = element_text(size = 3), axis.title = element_text(size = 5), plot.title = element_text(size = 10), legend.position="none") +
+  scale_fill_brewer(palette = "PuOr")
+
+
+p1 + p2 + p3 + p4 + p5 + p6 
+p7 + p8 + p9 + p10 + p11
+```
 
 
 
