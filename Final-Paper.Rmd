@@ -234,8 +234,6 @@ Same like for speechiness Hip-Hop genre has more average of 0.20 and Country bei
 Last but one tempo feature is high with average of 126 in Anime genre and low in Classical being the lowest one with value = 104.
 And our last feature valence has highest average of 0.57 for Blues genre and Lowest average of 0.21 for Classical genre
 
-
-
 ```{r, results = 'markup'}
 Cont_Table <- table(music$music_genre, music$key)
 xkabledply(Cont_Table, title="Contingency Table for Genre and Key")
