@@ -80,6 +80,52 @@ music$tempo <- as.numeric(music$tempo)
 ```
 
 We changed `key`, `mode`, and `music_genre` from character variable to factorial variable. We also changed `tempo` from character variable to numeric variable. After changing vectors, below is the summary of our data set. 
+
+```{r, results='markup'}
+xkablesummary(music)
+```
+
+```{r, results='hold'}
+# checking and removing null values
+print(colSums(is.na(music)))
+music = na.omit(music)
+```
+Processing the data to remove the rows containing Null values, 4985 rows were removed. We now have `r nrow(music)` observations in our data set. Moving forward, we derived secondary data set with only the relevant numerical features for correlations.
+ 
+```{r, results='markup'}
+#seperating numeric values
+numcolumns <- unlist(lapply(music,is.numeric))
+music_cor <- music[,numcolumns]
+music_cor <- music_cor[,-c(1)]
+
+xkablesummary(music_cor)
+```
+looking at the general summary of this data set, we have 11 numeric variables that are relevant to this research. `acousticness`, `danceability`, `energy`, `instrumentalness`, `liveness`, `speechiness`, and `valence` have a range of 0 - 1, `popularity` ranges from 0 - 99, `duration_ms` ranges from -1 - 4497994, `loudness` ranges from -47 to 4, and `tempo` has a range of 34 - 221. Moving on We will look into the distribution of these features to understand them better.
+
+## Histograms
+```{r, results='hold'}
+# Histograms for all numeric columns
+loadPkg("corrplot")
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
+{  
+hist(music_cor[, i], breaks = 20, main = names(music_cor[i]), col = COL2('PuOr', 20), xlab = "")
+}
+```
+Looking at the distributions, we can observe that the data is not normally distributed. `duration_ms`, `liveness` and `speechiness` are displaying clear right-skew and `loudness` is left-skewed.
+
+## qqplots
+```{r, results='hold'}
+#qqplots for all numeric columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor[,1: ncol(music_cor)]))
+{  
+qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
+   qqline(music_cor[, i], col = "orange")
+}
+```
+Further, we observe clear presence of outliers in the `duration_ms` column and `popularity`, `loudness`, `liveness`, `speechiness`, `tempo` and `instrumentalness` are showing abnormal distribution.
+
 # Section IV: Logit Modeling
 
 We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
