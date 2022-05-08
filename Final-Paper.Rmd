@@ -17,7 +17,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = F, results = "hide", message = F)
 library(ezids)
-#install.packages("nnet")
+install.packages("nnet")
+install.packages("partykit")
 library(nnet)
 ```
 
