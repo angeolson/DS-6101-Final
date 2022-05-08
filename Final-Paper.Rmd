@@ -126,6 +126,134 @@ qqnorm(music_cor[, i], main = names(music_cor[i]), pch = 18, col = "purple4")
 ```
 Further, we observe clear presence of outliers in the `duration_ms` column and `popularity`, `loudness`, `liveness`, `speechiness`, `tempo` and `instrumentalness` are showing abnormal distribution.
 
+
+## Removing outliers
+```{r, results='hide'}
+music2 <- data.frame(music)
+
+# changing vectors
+music2$key <- factor(music2$key)
+music2$mode <- factor(music2$mode)
+music2$music_genre <- factor(music2$music_genre)
+music2$tempo <- as.numeric(music2$tempo)
+
+# Removing outliers
+music2 = outlierKD2(music2, popularity, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, danceability, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, loudness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, liveness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, duration_ms, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, speechiness, rm = TRUE, histogram = FALSE)
+music2 = outlierKD2(music2, tempo, rm = TRUE, histogram = FALSE)
+
+# Seperating numeric values
+numcolumns2 <- unlist(lapply(music2,is.numeric))
+music_cor2 <- music2[,numcolumns2]
+music_cor2 <- music_cor2[,-c(1)]
+```
+
+Removing the outliers by changing them to NA using the outliersKD2 function has affected 16210 observations out of 45020 observations. We have derived another data set (music2) for this process. The new dataset is described below, 
+
+```{r, results='hold'}
+xkabledply(head(music2), title = "Dataframe without outliers")
+xkablesummary(music_cor2)
+```
+Looking at the general summary now, we can see that the minimum value of `duration_ms` has changed to 34040 from -1 and maximum has changed to 409507 from 4497994. `loudeness` has a range or -19 - 2, `tempo` has a range of 34 - 209 and `popularity` has a range of 1 - 89. 
+
+## Histogram (without outliers)
+```{r, results='markup'}
+# Histograms for all numeric columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor2[,1: ncol(music_cor2)]))
+{  
+hist(music_cor2[, i], breaks = 20, main = names(music_cor2[i]), col = COL2('PuOr', 20), xlab = "")
+}
+```
+
+## qqplot (without outliers)
+```{r, results='markup'}
+# qqplots for all numerical columns
+par(mfrow=c(2,3))
+for (i in 1:ncol(music_cor2[,1: ncol(music_cor2)]))
+{  
+qqnorm(music_cor2[, i], main = names(music_cor2[i]), pch = 18, col = "purple4")
+   qqline(music_cor2[, i], col = "red")
+}
+
+```
+
+Looking at the distributions again, we can observe that most features now show symmetric/normal distribution. We have included both histograms and QQ plots again to show the changes. However, going into the analysis we have decided to keep these outliers as we do not want to completely exclude observations like audio books and meditation music, which generally have longer durations, from our research. 
+
+## Genres
+
+Here, we look at how many genres there are and how many observations are in each genre. In the table below, we see that we are looking at `r nrow(music$music_genre)` genres, each with roughly 4,500 observations, making this a balanced dataset. We remove blank (" ") genres.
+
+```{r, results='hide'}
+unique(music$music_genre)
+```
+
+```{r, results = 'markup'}
+library(dplyr)
+g <- music %>%
+     group_by(music_genre) %>%
+     count()
+g
+```
+
+
+All keys (major and minor) are represented in the dataset, and the distribution of songs in each key across all genres does appear to be statistically significantly different at  the $\alpha$ = 0.05 level.
+
+```{r, results = 'markup'}
+Cont_Table <- table(music$music_genre, music$key)
+xkabledply(Cont_Table, title="Contingency Table for Genre and Key")
+chitest = chisq.test(Cont_Table)
+chitest
+```
+
+```{r}
+# drop those blank genre values 
+#music = music[!(music$music_genre == ""),]
+
+# convert tempo to numeric
+#music$tempo <- as.numeric(music$tempo)
+
+# created some na values...let's see what
+
+#tempoNA <- music %>%
+#     group_by(is.na(music$tempo)) %>%
+#     count()
+#tempoNA
+# not enough to cause concern 
+```
+```{r}
+
+# drop those blank genre values 
+#music = music[!(music$music_genre == ""),]
+
+# key, mode, genre as factor
+#music$key <- factor(music$key)
+#music$mode <- factor(music$mode)
+#music$music_genre <- factor(music$music_genre)
+
+# tempo as numeric
+#music$tempo <- as.numeric(music$tempo)
+
+# drop na values
+#music = music[!(is.na(music$tempo)),]
+```
+
+Below, we test for statistically significant differences in our continuous variables using ANOVA tests and find that all show differences in means.
+
+```{r, results = 'markup'}
+# simplify dataset 
+musicNum <- music[, c(4:9, 11:12, 14:15, 17, 18)]
+
+# run tests
+library(tidyverse)
+anova_results <- purrr::map(musicNum[,1:11], ~summary(aov(.x ~ musicNum$music_genre)))
+anova_results
+```
+
 # Section IV: Logit Modeling
 
 We developed two types of Logit models to predict genre; multinomial logit regression and binomial logit regression. The multinomial model allows us to see what the second, third, etc. most likely genres are to get a better sense of where the model might be mis-classifying and why. Given the similarities between some genres, we expect that there would be some genres where this type of model might predict poorly. A binomial model won't allow us to see what the likeliest genres for a song might be, but because we can tailor each model to classify a particular genre, we may obtain better accuracy.
