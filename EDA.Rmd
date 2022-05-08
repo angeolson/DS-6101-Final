@@ -197,6 +197,23 @@ genres = music %>% group_by(music_genre)  %>%
 xkabledply(genres, title = "Averages for each genre")
 ```
 
+# Barplot to see energy of each music_genre
+```{r, results='markup'}
+library(ggplot2)
+ggplot(data=music, aes(x=music_genre, y=energy)) +  
+  geom_col(fill = "#00AFBB") + 
+   labs(title='Energy of each music_genre', x="music_genre", y = "energy") + 
+    theme(plot.title = element_text(hjust = 0.5))
+```
+
+# Barplot to see popularity of each Music Genre by energy wise
+```{r, results='markup'}
+library(ggplot2)
+ggplot(data=music, aes(x=music_genre, y=popularity)) +  
+  geom_col(fill = "#00AFBB") + 
+   labs(title='Energy of each music_genre', x="music_genre", y = "popularity") +             theme(plot.title = element_text(hjust = 0.5))
+```
+
 ## Distribution of each feature
 ```{r, results='hold'}
 library(patchwork)
