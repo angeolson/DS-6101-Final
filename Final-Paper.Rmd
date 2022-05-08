@@ -227,7 +227,7 @@ Coming to acousticness feature Classical genre tops the list with average = 0.87
 Same like for danceability Hip-Hop genre has more average of 0.713 and Classical being the least one with an average of00.306 .
 For popularity duration_ms Classical genre tops the list with an average of 278ms and Country at last position with average = 195ms.
 When it comes to energy, The Electronic genre places first with an average of 0.73, while Classical places last with an average of 0.17.
-The same goes for instrumentality. Classical music has a higher average of 0.60, while hip-hop has the lowest average of 0.01.
+The same goes for instrumentalness. Classical music has a higher average of 0.60 which we all know classical will be having many instruments, while hip-hop has the lowest average of 0.01.
 The Blues genre ranks first for liveness duration ms with an average of 0.23, followed by Classical with an average of 0.16.
 In terms of the loudenss feature, The Alternative genre ranks first with a score of -6.54, while Classical ranks bottom with a score of -21.60.
 Same like for speechiness Hip-Hop genre has more average of 0.20 and Country being the least one with average = 0.04.
